@@ -1,0 +1,23 @@
+cd D:\Git\TXC-MicroServices\MicroServices\BFFGateway\src\GatewayApi		
+dotnet run --project GatewayApi.csproj -c Development --urls=http://localhost:30103		
+http://localhost:30103/swagger		
+
+cd D:\Git\TXC-MicroServices\MicroServices\Tenant\src\Service
+dotnet run --project Service.csproj -c Development --urls=http://localhost:9000
+
+http://localhost:5052/graphql
+cd D:\Git\TXC-GraphQL-Services\VoucherService
+dotnet run --project VoucherService.csproj -c Development --urls=http://localhost:5052
+
+http://localhost:5053/graphql/
+cd D:\Git\TXC-GraphQL-Services\MerchantInfoService
+dotnet run --project MerchantInfoService.csproj -c Development --urls=http://localhost:5053
+
+http://localhost:5058/graphql/
+cd D:\Git\TXC-GraphQL-Services\TenantService
+dotnet run --project TenantService.csproj -c Development --urls=http://localhost:5058
+
+
+
+cd D:\Git\TXC-MicroServices\MicroServices\Voucher\src\GrpcService
+dotnet run --project GrpcService.csproj -c Development --urls=http://localhost:9003

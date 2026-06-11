@@ -1,0 +1,51 @@
+https://www.c-sharpcorner.com/article/understanding-addtransient-vs-addscoped-vs-addsingleton-in-asp-net-core/
+
+
+    AddTransient
+    Transient lifetime services are created each time they are requested. This lifetime works best for lightweight, stateless services.
+
+services.AddTransient<ITransientService, OperationService>();    
+services.AddTransient<IDapperOperation>(dapper => new DapperOperation());
+
+
+        protected Context _context;
+        public Repository(Context context)
+        {
+            _context = context;
+        }
+builder.Services.AddScoped(d => new Context() { Connection = new SqlConnection() });
+----------------------------------------------------------------------------------------------
+            Context context = new Context
+            {
+                Connection = _dbConnection
+            };
+
+
+
+
+
+    AddScoped
+    Scoped lifetime services are created once per request.
+
+services.AddScoped<IScopedService, OperationService>();    
+services.AddScoped<IDbCommand>(cmd => new SqlCommand { CommandTimeout = Convert.ToInt32(configuration.GetSection("SqlCommand:CommandTimeout").Value) });
+services.AddScoped<ModelValidationResultFilter>();
+services.AddScoped<TenantFilter>();
+services.AddScoped<ModelValidationResultFilter>();
+
+
+    AddSingleton
+    Singleton lifetime services are created the first time they are requested (or when ConfigureServices is run if you specify an instance there) and then every subsequent request will use the same instance.
+
+services.AddSingleton<ISingletonService, OperationService>();    
+services.AddSingleton<ITenantShardMapHelper, TenantShardMapHelper>();
+
+        public static IServiceCollection AddConsulConfig(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.AddSingleton<IConsulClient, ConsulClient>(c => new ConsulClient(cfg =>
+            {
+                cfg.Address = new Uri(configuration.GetSection("Configuration:ConsulAddress").Value);
+            }));
+            return services;
+        }
+
