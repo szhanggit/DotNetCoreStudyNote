@@ -1,0 +1,18 @@
+Go to TrackerLibrary => packages.config => right click to get 将packages.config迁移到PackageReference(M)...
+Select TrackerLibrary and unload the project => Edit TrackerLibrary.csproj => Delete everything inside all
+
+TrackerLibrary.csproj
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+</Project>
+
+Go to Solution => right click "Open file to file explore" 
+=> D:\Study\.NetCore\02.UpdatingTheApplication\TournamentTrackerStarterCode\TrackerLibrary\Properties\AssemblyInfo.cs
+delete AssemblyInfo.cs
+
+Reload TrackerLibrary
+Go to Dependencies => right click "Manage NuGet Packages" => Go to Browse and check "Include prerelease"
+Search for 'twilio' and 'dapper' and install
+Keep searching for 'System.ComponentModel.DataAnnotations', 'System.Data.SqlClient', 'System.Configuration' and install them all from Nuget.

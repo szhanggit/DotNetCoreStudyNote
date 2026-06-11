@@ -1,0 +1,17 @@
+http://www.techtutorhub.com/category/dot-net-core
+
+http://www.techtutorhub.com/article/Difference-between-AddTransient-AddScoped-and-AddSingleton-in-NET-Core/90
+http://www.techtutorhub.com/article/How-to-implement-Dependency-Injection-in-NET-Core-Console-Application/87
+http://www.techtutorhub.com/article/How-to-Add-Entity-Framework-Core-DBContext-in-Dot-NET-Core-Console-Application/86
+http://www.techtutorhub.com/article/how-to-add-logging-in-dot-net-core-console-application/84
+http://www.techtutorhub.com/article/How-to-Publish-dot-net-core-3-app-to-iis-10/79
+http://www.techtutorhub.com/article/asp-net-web-api-Access-to-XMLHttpRequest-at-from-origin-has-been-blocked-by-CORS-policy-No-Access-Control-Allow-Origin-header-is-present-on-the-requested-resource/43
+http://www.techtutorhub.com/article/Enable-NET-Core-Web-API-CORS-Implementation-with-Angular/22
+
+
+
+
+
+
+
+
