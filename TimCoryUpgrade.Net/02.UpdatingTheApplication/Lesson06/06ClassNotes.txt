@@ -1,0 +1,20 @@
+Go to TrackerWPFUI => right click package.Config "Migrate packages.config to PackageRerence..."
+Unload TrackerWPFUI to edit TrackerWPFUI.csproj
+
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Caliburn.Micro" Version="4.0.62-alpha" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TrackerLibrary\TrackerLibrary.csproj" />
+  </ItemGroup>
+</Project>
+
+Go to NuGet PackageReference
+Caliburn.Micro
