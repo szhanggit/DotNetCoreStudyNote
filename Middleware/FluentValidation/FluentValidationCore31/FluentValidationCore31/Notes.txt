@@ -1,0 +1,5 @@
+﻿https://nodogmablog.bryanhogan.net/2020/02/fluent-validation-in-asp-net-core-3-1/
+Install-Package FluentValidation.AspNetCore
+Install-Package FluentValidation
+Install-Package Swashbuckle.AspNetCore
+http://localhost:5000/swagger/index.html
