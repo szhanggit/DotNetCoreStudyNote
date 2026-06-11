@@ -1,0 +1,142 @@
+15.1.Accessing Configuration Settings--------------------
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IConfiguration config)
+
+string defaultDebug = config["Logging:LogLevel:Default"];
+
+15.2.UsingTheConfigurationDataInServices--------------------
+        public Startup(IConfiguration configService)
+        {
+            Configuration = configService;
+        }
+        private IConfiguration Configuration { get; set; }
+
+
+15.3.UsingConfigurationDataWithTheOptionsPattern--------------------
+        public void ConfigureServices(IServiceCollection services)
+        {
+            services.Configure<MessageOptions>(Configuration.GetSection("Location"));
+        }
+
+
+15.4.UnderstandingTheLaunchSettingsFile--------------------
+In launchSettings.json
+	iisSettings is for IIS Express.
+	Platform is for dotnet start
+
+string environ = Configuration["ASPNETCORE_ENVIRONMENT"];
+
+Or go to Project => Properties => Debug => Environment vairables
+
+
+15.5.DeterminingTheEnvironmentInTheStartupClass--------------------
+IsDevelopment() 	This method returns true when the Development environment has been selected.
+IsStaging() 	This method returns true when the Staging environment has been selected.
+IsProduction() 	This method returns true when the Production environment has been selected.
+IsEnvironment(env) 	This method returns true when the environment specified by the argument has been selected.
+
+
+15.6.Storing User Secrets--------------------
+Make sure the folder that contains the Platform.csproj file
+
+dotnet tool uninstall --global dotnet-user-secrets
+dotnet tool install --global dotnet-user-secrets --version 3.0.0-preview-18579-0056
+dotnet user-secrets init
+dotnet user-secrets set "WebService:Id" "MyAccount"
+dotnet user-secrets set "WebService:Key" "MySecret123$"
+dotnet user-secrets list
+
+(If you are using Visual Studio, you can create and edit the JSON file directly by right-clicking the project in the Solution Explorer
+and selecting Manage User Secrets from the popup menu.)
+
+Read them out:
+string wsID = Configuration["WebService:Id"];
+string wsKey = Configuration["WebService:Key"];
+await context.Response.WriteAsync($"\nThe secret ID is: {wsID}");
+await context.Response.WriteAsync($"\nThe secret Key is: {wsKey}");
+
+
+15.7.UsingTheLoggingService--------------------
+
+LogTrace 			This method generates a Trace-level message, used for low-level debugging during development.
+LogDebug 		This method generates a Debug-level message, used for low-level debugging during development or production problem resolution.
+LogInformation 		This method generates an Information-level message, used to provide information about the general state of the application.
+LogError 			This method generates an Error-level message, used to record exceptions or errors that are not handled by the application.
+LogCritical 		This method generates a Critical-level message, used to record serious failures.
+
+
+Read Log:
+In the output window
+Platform - ASP.NET Core Web Server
+
+
+
+15.8.AddingTheStaticContentMiddleware--------------------
+app.UseStaticFiles();
+app.UseRouting();
+
+
+http://localhost:5000/static.html
+
+
+15.9.ChangingTheDefaultOptionsForTheStaticContentMiddleware
+
+
+ContentTypeProvider 		This property is used to get or set the IContentTypeProvider object that is responsible for producing the MIME type for a file. The default implementation of the interface uses the file extension to determine the content type and supports the most common file types.
+DefaultContentType 			This property is used to set the default content type if the IContentTypeProvider cannot determine the type of the file.
+FileProvider 			This property is used to locate the content for requests, as shown below.
+OnPrepareResponse 			This property can be used to register an action that will be invoked before the static content response is generated.
+RequestPath 			This property is used to specify the URL path that the middleware will respond to, as shown below.
+ServeUnknownFileTypes 		By default, the static content middleware will not serve files whose content type cannot be determined by the IContentTypeProvider. This behavior is changed by setting this property to true.
+
+
+app.UseStaticFiles();
+app.UseStaticFiles(new StaticFileOptions {
+FileProvider = new
+PhysicalFileProvider($"{env.ContentRootPath}/staticfiles"),
+RequestPath = "/files"
+});
+app.UseRouting();
+
+
+http://localhost:5000/files/hello.html
+
+
+15.10.UsingClientSidePackages
+LibMan
+
+dotnet tool install --global Microsoft.Web.LibraryManager.Cli --version 2.0.96
+libman init -p cdnjs
+
+You can install client-side packages by right-clicking the Platform project item in the Solution Explorer
+and selecting Add ➤ Client-Side Library from the popup menu.
+
+twitter-bootstrap
+libman install twitter-bootstrap@4.3.1 -d wwwroot/lib/twitter-bootstrap
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

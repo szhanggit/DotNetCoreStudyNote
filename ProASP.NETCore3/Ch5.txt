@@ -1,0 +1,28 @@
+cd D:\Study\.NetCore\ProASP.NETCore3\pro-asp.net-core-3-master\05.0.Start
+dotnet new globaljson --sdk-version 3.1.101 --output LanguageFeatures					(‪~\LanguageFeatures\global.json)
+dotnet new web --no-https --output LanguageFeatures --framework netcoreapp3.1			(Create web app framework)		
+dotnet new sln -o LanguageFeatures														(‪~\LanguageFeatures\LanguageFeatures.sln)
+dotnet sln LanguageFeatures add LanguageFeatures										
+
+
+
+
+
+To enable nullable reference types, an element must be added to the
+csproj file, like this:
+
+<Project Sdk="Microsoft.NET.Sdk.Web">
+	<PropertyGroup>
+		<TargetFramework>netcoreapp3.1</TargetFramework>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+</Project>
+
+
+
+
+
+
+
+public ViewResult Index() {
+

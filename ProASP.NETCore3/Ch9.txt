@@ -1,0 +1,132 @@
+        [BindNever]
+        public int OrderID { get; set; }
+        [BindNever]
+        public ICollection<CartLine> Lines { get; set; }
+        [Required(ErrorMessage = "Please enter a name")]
+        public string Name { get; set; }		
+		
+		
+		
+Adding the Font Awesome Package---------------------------------
+libman install font-awesome@5.12.0 -d wwwroot/lib/font-awesome		
+		
+		
+		
+
+
+
+http://fortawesome.github.io/Font-Awesome
+		
+		
+		
+		
+Extending the Database---------------------------------
+dotnet ef migrations add Orders		
+(
+The migration will be applied automatically when the application is started and the SeedData class calls the Migrate method
+provided by Entity Framework Core.
+)		
+		
+(Just in case you want to reset the whole thing:
+dotnet ef database drop --force --context StoreDbContext
+dotnet ef database update --context StoreDbContext
+)		
+		
+
+
+EF Join---------------------------------		
+public IQueryable<Order> Orders => context.Orders.Include(o => o.Lines).ThenInclude(l => l.Product);    //Eager loading		
+		
+select * from [Orders] o
+inner join [dbo].[CartLine] cl on o.OrderId = cl.OrderId
+inner join Products p on cl.ProductID = p.ProductID		
+		
+		
+		
+        public void SaveOrder(Order order)
+        {
+            context.AttachRange(order.Lines.Select(l => l.Product));    //This ensures that Entity Framework Core won’t try to write the de-serialized Product objects that are associated with the Order object. P206
+            if (order.OrderID == 0)
+            {
+                context.Orders.Add(order);
+            }
+            context.SaveChanges();
+        }		
+		
+		
+		
+		
+		
+http://localhost:5000/cart
+http://localhost:5000/completed		
+http://localhost:5000/order/checkout		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

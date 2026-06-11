@@ -1,0 +1,217 @@
+
+13.1.UnderstandingURLRouting	-------------------------------------------------
+app.UseEndpoints(endpoints => {
+endpoints.MapGet("routing", async context => {
+await context.Response.WriteAsync("Request Was Routed");
+});
+});
+
+http://localhost:5000/routing
+
+
+MapGet(pattern, endpoint) 			This method routes HTTP GET requests that match the URL pattern to the endpoint.
+MapPost(pattern, endpoint) 			This method routes HTTP POST requests that match to the URL pattern to the endpoint.
+MapPut(pattern, endpoint) 			This method routes HTTP PUT requests that match the URL pattern to the endpoint.
+MapDelete(pattern, endpoint) 			This method routes HTTP DELETE requests that match the URL pattern to the endpoint.
+MapMethods(pattern, methods, endpoint)	This method routes requests made with one of the specified HTTP methods that match the URL pattern to the endpoint.
+Map(pattern, endpoint) 			This method routes all HTTP requests that match the URL pattern to the endpoint.
+
+13.2.UsingSegmentVariables-------------------------------------------------
+			app.UseEndpoints(endpoints => {
+				endpoints.MapGet("{first}/{second}/{third}", async context => {
+					await context.Response.WriteAsync("Request Was Routed\n");
+					foreach (var kvp in context.Request.RouteValues)
+					{
+						await context.Response.WriteAsync($"{kvp.Key}: {kvp.Value}\n");
+						/*
+							Count This property returns the number of segment variables.
+							ContainsKey(key) This method returns true if the route data contains a value for the specified key.
+					 */
+					}
+				});
+				endpoints.MapGet("capital/uk", new Capital().Invoke);
+				endpoints.MapGet("population/paris", new Population().Invoke);
+			});
+
+http://localhost:5000/apples/oranges/cherries
+
+
+[key] 			The class defines an indexer that allows values to be retrieved by key.
+Keys 			This property returns the collection of segment variable names.
+Values 			This property returns the collection of segment variable values.
+Count 			This property returns the number of segment variables.
+ContainsKey(key) 		This method returns true if the route data contains a value for the specified key.
+
+
+13.3.RefactoringMiddleware-------------------------------------------------
+string country = context.Request.RouteValues["country"] as string;
+
+			app.UseEndpoints(endpoints => {
+				endpoints.MapGet("{first}/{second}/{third}", async context => {
+					await context.Response.WriteAsync("Request Was Routed\n");
+					foreach (var kvp in context.Request.RouteValues)
+					{
+						await context.Response.WriteAsync($"{kvp.Key}: {kvp.Value}\n");
+						/*
+							Count This property returns the number of segment variables.
+							ContainsKey(key) This method returns true if the route data contains a value for the specified key.
+					 */
+					}
+				});
+				endpoints.MapGet("capital/{country}", Capital.Endpoint);
+				endpoints.MapGet("population/{city}", Population.Endpoint);
+			});
+
+13.4.GeneratingUrlsFromRoutes-------------------------------------------------
+					LinkGenerator generator = context.RequestServices.GetService<LinkGenerator>();
+					string url = generator.GetPathByRouteValues(context, "population", new { city = country });
+					context.Response.Redirect(url);
+
+endpoints.MapGet("size/{city}", Population.Endpoint).WithMetadata(new RouteNameMetadata("population"));//Basically it is a route name.
+
+13.5.MatchingMultipleValuesFromASingleUrlSegment-------------------------------------------------
+				endpoints.MapGet("files/{filename}.{ext}", async context => {
+					await context.Response.WriteAsync("Request Was Routed\n");
+					foreach (var kvp in context.Request.RouteValues)
+					{
+						await context.Response.WriteAsync($"{kvp.Key}: {kvp.Value}\n");
+					}
+				});
+
+http://localhost:5000/files/myfile.txt
+
+
+13.6.UsingDefaultValuesForSegmentVariables-------------------------------------------------
+endpoints.MapGet("capital/{country=France}", Capital.Endpoint);
+endpoints.MapGet("size/{city}", Population.Endpoint).WithMetadata(new RouteNameMetadata("population"));
+
+
+
+
+13.7.UsingOptionalSegmentsInAURLPattern-------------------------------------------------
+string city = context.Request.RouteValues["city"] as string ?? "london";
+
+
+
+
+13.8.UsingACatchallSegmentVariable-------------------------------------------------
+endpoints.MapGet("{first}/{second}/{*catchall}", async context => {
+await context.Response.WriteAsync("Request Was Routed\n");
+foreach (var kvp in context.Request.RouteValues) {
+await context.Response.WriteAsync($"{kvp.Key}: {kvp.Value}\n");
+}
+});
+
+
+
+
+13.9.ConstrainingSegmentMatching-------------------------------------------------
+endpoints.MapGet("{first:int}/{second:bool}", async context => {
+	await context.Response.WriteAsync("Request Was Routed\n");
+	foreach (var kvp in context.Request.RouteValues) {
+		await context.Response.WriteAsync($"{kvp.Key}: {kvp.Value}\n");
+	}
+});
+
+
+
+
+
+13.10.ConstrainingSegmentMatching2-------------------------------------------------
+endpoints.MapGet("{first:alpha:length(3)}/{second:bool}", async context => {
+	await context.Response.WriteAsync("Request Was Routed\n");
+	foreach (var kvp in context.Request.RouteValues) {
+		await context.Response.WriteAsync($"{kvp.Key}: {kvp.Value}\n");
+	}
+});
+
+
+
+
+
+
+
+
+13.11.ConstrainingMatchingToASpecificSetOfValues-------------------------------------------------
+endpoints.MapGet("capital/{country:regex(^uk|france|monaco$)}", Capital.Endpoint);
+
+
+
+
+13.12.DefiningFallbackRoutes-------------------------------------------------
+endpoints.MapFallback(async context => {
+	await context.Response.WriteAsync("Routed to fallback endpoint");
+});
+
+
+
+13.13.Advanced.CreatingCustomConstraints-------------------------------------------------
+public void ConfigureServices(IServiceCollection services) {
+	services.Configure<RouteOptions>(opts => {
+		opts.ConstraintMap.Add("countryName", typeof(CountryRouteConstraint));
+	});
+}
+
+endpoints.MapGet("capital/{country:countryName}", Capital.Endpoint);
+
+
+
+
+
+
+
+13.14.Advanced.AvoidingAmbiguousRouteExceptions-------------------------------------------------
+app.UseEndpoints(endpoints => {
+	endpoints.Map("{number:int}", async context => {
+		await context.Response.WriteAsync("Routed to the int endpoint");
+	}).Add(b => ((RouteEndpointBuilder)b).Order = 1);
+	endpoints.Map("{number:double}", async context => {
+		await context.Response.WriteAsync("Routed to the double endpoint");
+	}).Add(b => ((RouteEndpointBuilder)b).Order = 2);
+});
+
+
+
+
+
+
+
+
+13.15.Advanced.AccessingTheEndpointInAMiddlewareComponent-------------------------------------------------
+
+One limitation of the normal request pipeline is that a middleware component at the start of the pipeline can’t tell which of
+the later components will generate a response.
+
+
+
+			app.Use(async (context, next) => {
+				Endpoint end = context.GetEndpoint();
+				if (end != null)
+				{
+					await context.Response.WriteAsync($"{end.DisplayName} Selected \n");
+				}
+				else
+				{
+					await context.Response.WriteAsync("No Endpoint Selected \n");
+				}
+				await next();
+			});
+
+			app.UseEndpoints(endpoints => {
+				endpoints.Map("{number:int}", async context => {
+					await context.Response.WriteAsync("Routed to the int endpoint");
+				}).WithDisplayName("Int Endpoint").Add(b => ((RouteEndpointBuilder)b).Order = 1);
+				endpoints.Map("{number:double}", async context => {
+					await context.Response.WriteAsync("Routed to the double endpoint");
+				}).WithDisplayName("Double Endpoint").Add(b => ((RouteEndpointBuilder)b).Order = 2);
+			});
+
+
+
+
+
+
+
+
+
+

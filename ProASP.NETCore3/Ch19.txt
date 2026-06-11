@@ -1,0 +1,109 @@
+Add an end point and add it in Startup.cs
+
+
+http://localhost:5000/api/products/1
+http://localhost:5000/api/products
+
+http://localhost:5000/api/products -Method POST 
+{"Name": "Swimming Goggles","Price": 12.75,"CategoryId": 1,"SupplierId": 1}
+-ContentType "application/json"
+{"Name": "Soccer boots","Price": 89.99,"CategoryId": 2,"SupplierId": 2}
+
+Useful ControllerBase Properties
+
+HttpContext This property returns the HttpContext object for the current request.
+ModelState This property returns details of the data validation process, as demonstrated in the “Validating Data” section later
+in the chapter and described in detail in Chapter 29.
+Request This property returns the HttpRequest object for the current request.
+Response This property returns the HttpResponse object for the current response.
+RouteData This property returns the data extracted from the request URL by the routing middleware, as described in Chapter 13.
+User This property returns an object that describes the user associated with the current request, as described in Chapter 38.
+
+
+
+
+http://localhost:5000/api/products -Method Put
+{"ProductId":1, "Name": "Green Kayak","Price": 275, "CategoryId": 1,"SupplierId": 1}
+
+http://localhost:5000/api/products/12	-Method Delete
+
+
+
+Useful Results:
+
+Ok The IActionResult returned by this method produces a 200 OK status code and sends an optional
+data object in the response body.
+NoContent The IActionResult returned by this method produces a 204 NO CONTENT status code.
+BadRequest The IActionResult returned by this method produces a 400 BAD REQUEST status code. The
+method accepts an optional model state object that describes the problem to the client, as
+demonstrated in the “Validating Data” section.
+File The IActionResult returned by this method produces a 200 OK response, sets the Content-Type
+header to the specified type, and sends the specified file to the client.
+NotFound The IActionResult returned by this method produces a 404 NOT FOUND status code.
+RedirectRedirectPermanent The IActionResult returned by these methods redirects the client to a specified URL.
+RedirectToRoute
+RedirectToRoutePermanent
+The IActionResult returned by these methods redirects the client to the specified URL that is
+created using the routing system, using convention routing, as described in the “Redirecting Using
+Route Values” sidebar.
+LocalRedirectLocal
+RedirectPermanent
+The IActionResult returned by these methods redirects the client to the specified URL that is local
+to the application.
+RedirectToActionRedirect
+ToActionPermanent
+The IActionResult returned by these methods redirects the client to an action method. The URL
+for the redirection is created using the URL routing system.
+RedirectToPageRedirect
+ToPagePermanent
+The IActionResult returned by these methods redirects the client to a Razor Page, described in
+Chapter 23.
+StatusCode The IActionResult returned by this method produces a response with a specific status code.
+
+
+
+http://localhost:5000/api/products/redirect
+
+
+
+
+Data Validating:
+
+        [Required]
+        public string Name { get; set; }
+        [Range(1, 1000)]
+        public decimal Price { get; set; }
+        [Range(1, long.MaxValue)]
+        public long CategoryId { get; set; }
+        [Range(1, long.MaxValue)]
+        public long SupplierId { get; set; }
+
+
+ModelState.IsValid
+
+http://localhost:5000/api/products
+{"Name": "Green Kayak","Price": 275000, "CategoryId": 1,"SupplierId": 1}
+
+
+
+P446
+[HttpGet("{id}")]
+public Product GetProduct() {
+
+This attribute tells the MVC framework that the GetProduct action method handles GET requests for the URL pattern api/
+products/{id}. During the discovery process, the attributes applied to the controller are used to build the set of URL
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

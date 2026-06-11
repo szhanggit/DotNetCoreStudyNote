@@ -1,0 +1,125 @@
+AddSingleton<T, U>() 		This method creates a single object of type U that is used to resolve all dependencies on type T.
+AddTransient<T, U>() 		This method creates a new object of type U to resolve each dependency on type T.
+AddScoped<T, U>() 			This method creates a new object of type U that is used to resolve dependencies on T within a single scope, such as request.
+
+
+
+
+
+
+Understanding Service Location and Tight Coupling-----------------------------
+Singleton solution.
+
+Understanding the Service Location Problem-----------------------------
+Static class solution.
+
+Using Dependency Injection-----------------------------
+public void ConfigureServices(IServiceCollection services) {
+services.AddSingleton<IResponseFormatter, HtmlResponseFormatter>();
+}
+(!!!Most basic one!!!)
+
+Using a Service in a Middleware Class-----------------------------
+public WeatherMiddleware(RequestDelegate nextDelegate,
+IResponseFormatter respFormatter) {
+next = nextDelegate;
+formatter = respFormatter;
+}
+
+Getting Services from the HttpContext Object-----------------------------
+Using a Service in an Endpoint.
+
+Using an Adapter Function-----------------------------
+Using a Service in an Endpoint.
+
+Using the Activation Utility Class-----------------------------
+Using a Service in an Endpoint.
+
+
+
+Creating Transient Services-----------------------------
+        public void ConfigureServices(IServiceCollection services) {
+            services.AddTransient<IResponseFormatter, GuidService>();
+        }
+It exists for all of the sessions.		
+Transient Constructor Injection will make it. 
+
+		
+Avoiding the Transient Services Reuse Pitfall-----------------------------		
+		Changes ensure that the transient service is resolved for every request, which means that a
+new GuidService object is created and every response contains a unique ID.
+		
+Transient Property Injection will make life cycle in each session. 		
+The simplest way of solving this issue for endpoints is to explicitly request services when each
+request is handled (P326)		
+		
+		
+		
+Using Scoped Services-----------------------------		
+A new scope is started for each HTTP request, which means that a service object will be shared by all the components
+that handle that request.		
+		
+public void ConfigureServices(IServiceCollection services) {
+services.AddScoped<IResponseFormatter, GuidService>();
+}		
+		
+		
+Avoiding the Scoped Service Validation Pitfall-----------------------------				
+Scoped services can be used only within a scope. A new scope is created automatically for each request that was received.
+Requesting a scoped service outside of a scope causes an exception.		
+		
+If a extention service needs to access a scoped service, system will throw exception.		
+		
+Accessing Scoped Services Through the Context Object-----------------------------				
+It is the method for extension service to access a scoped service.
+In the EndpointExtensions.cs, context.RequestServices.GetService(p.ParameterType)).ToArray()	
+		
+Using Scoped Services in Lambda Expressions-----------------------------			
+It is a good method for extension service to access a scoped service.		
+		
+Creating Dependency Chains-----------------------------			
+This allows one service to declare a dependency on another service, creating a chain that is resolved automatically.		
+		
+Accessing Services in the ConfigureServices Method-----------------------------					
+public Startup(IConfiguration config) {
+Configuration = config;
+}
+private IConfiguration Configuration;		
+		
+		
+Using Service Factory Functions-----------------------------			
+Define DI in appsetting.json
+!!!This is a great place to store settings!!!
+
+Creating Services with Multiple Implementations-----------------------------			
+!!!This is very useful!!!
+DI selction.		
+		
+		
+Using Unbound Types in Services-----------------------------		
+Services can be defined with generic type parameters that are bound to specific types when the service is requested,	
+	
+public void ConfigureServices(IServiceCollection services) {
+services.AddSingleton(typeof(ICollection<>), typeof(List<>));
+}		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

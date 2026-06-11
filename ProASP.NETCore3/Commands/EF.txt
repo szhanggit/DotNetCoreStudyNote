@@ -1,0 +1,41 @@
+It is about entity framework:
+dotnet add package Microsoft.EntityFrameworkCore.Design --version 3.1.1
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 3.1.1
+dotnet tool uninstall --global dotnet-ef
+dotnet tool install --global dotnet-ef --version 3.1.1
+
+
+
+
+Without the IQueryable<T> interface, I would have to retrieve all of the
+Product objects from the database and then discard the ones that I don’t want, which becomes an expensive operation as the
+amount of data used by an application increases. It is for this reason that the IQueryable<T> interface is typically used instead
+of IEnumerable<T> in database repository interfaces and classes.
+
+
+
+Creating the Database Migration:
+cd D:\Study\.NetCore\ProASP.NETCore3\pro-asp.net-core-3-master\07.0.Start\SportsSln\SportsStore
+dotnet ef migrations add Initial		(This will generate D:\Study\.NetCore\ProASP.NETCore3\pro-asp.net-core-3-master\07.0.Start\SportsSln\SportsStore\Migrations)
+
+
+
+
+
+
+
+dotnet ef migrations add ShippedOrders
+dotnet ef migrations add Orders	(P204)
+
+This command tells Entity Framework Core to take a new snapshot of the application data model, work out how it differs from
+the previous database version, and generate a new migration called Orders. The new migration will be applied automatically when
+the application starts because the SeedData calls the Migrate method provided by Entity Framework Core.
+
+
+dotnet ef database drop --force --context StoreDbContext
+Run this command to delete the database
+
+Once the database has been removed, run the following command from the SportsStore folder to re-create the database and
+apply the migrations you have created by running the following command:
+
+dotnet ef database update --context StoreDbContext

@@ -1,0 +1,193 @@
+Installing the Identity Package for Entity Framework Core------------------------------------------------
+cd D:\Study\.NetCore\ProASP.NETCore3\pro-asp.net-core-3-master\11.1Identity\SportsSln\SportsStore
+dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore --version 3.1.0
+
+
+
+dotnet ef migrations add Initial --context AppIdentityDbContext
+dotnet ef database update --context AppIdentityDbContext
+
+
+
+If you need to reset the Identity database, then run the following command:
+dotnet ef database drop --force --context AppIdentityDbContext
+Restart the application, and the database will be re-created and populated with seed data.
+
+
+
+select * from [dbo].[AspNetUsers]
+
+
+
+
+http://localhost:5000/admin
+http://localhost:5000/admin/identityusers
+Admin
+Secret123$
+
+
+
+It is the way to secure the whole page.
+@page "/admin"
+@{ Layout = null; }
+@using Microsoft.AspNetCore.Authorization			--Just added
+@attribute [Authorize]								--Just added
+<!DOCTYPE html>
+<html>
+<head>
+<title>SportsStore Admin</title>
+<link href="/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+<base href="/" />
+</head>
+<body>
+<component type="typeof(Routed)" render-mode="Server" />
+<script src="/_framework/blazor.server.js"></script>
+</body>
+</html>
+
+
+
+
+Deployment------------------------------------
+
+Add error page.
+Add production database connection.
+
+Go to Docker.com and download and install the Docker Desktop package.
+docker --version
+
+
+https://docs.docker.com/docker-for-windows/troubleshoot/#virtualization
+https://blog.csdn.net/mythest/article/details/92999646
+Virtualization enabled in the BIOS
+https://bluestackforpc.com/how-to-enable-virtualization-on-windows-108/
+
+
+
+
+wcftestingsite				wcftestingsite.com		8082	C:\inetpub\wwwroot\api\wcftestingsite
+ConsumerService										8000	C:\E\API\Wcf\Examples\AdoraLikeApp0\Consumer.Service\Consumer.Service
+downloadservice				downloadservice.net		7381	C:\inetpub\wwwroot\api\downloadservice
+httpsservicesite			httpsservicesite.net	443		LAPTOP-LDKKTL6G					C:\inetpub\wwwroot\api\httpsservicesite
+Default Web Site											C:\inetpub\wwwroot
+MyFirstWcfApp.WcfService	home.myfirstwcfapp.com	8080	C:\E\API\Wcf\Deployments\MyFirstWcfApp
+
+
+
+cd D:\Study\.NetCore\ProASP.NETCore3\pro-asp.net-core-3-master\11.2.Deployment\SportsSln\SportsStore
+dotnet publish -c Release
+docker-compose build
+docker-compose up
+
+
+http://localhost:5001/
+http://localhost:5001/admin
+Admin
+Secret123$
+
+
+
+
+--------------------------------------------------------
+
+System.Exception: Cannot connect to SQL Server Browser. Ensure SQL Server Browser has been started.
+https://docs.microsoft.com/en-us/dynamics-nav/how-to--start-sql-browser-service
+--------------------------------------------------------
+
+bash
+ubuntu20.04
+https://www.cnblogs.com/kylingx/p/12985355.html
+vim /etc/apt/source.list
+
+deb http://mirrors.aliyun.com/ubuntu/ focal main restricted
+deb http://mirrors.aliyun.com/ubuntu/ focal-updates main restricted
+deb http://mirrors.aliyun.com/ubuntu/ focal universe
+deb http://mirrors.aliyun.com/ubuntu/ focal-updates universe
+deb http://mirrors.aliyun.com/ubuntu/ focal multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-updates multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-backports main restricted universe multiverse
+deb http://mirrors.aliyun.com/ubuntu/ focal-security main restricted
+deb http://mirrors.aliyun.com/ubuntu/ focal-security universe
+deb http://mirrors.aliyun.com/ubuntu/ focal-security multiverse
+
+
+
+apt-get update
+apt-get upgrade
+
+
+
+
+
+https://www.windowscentral.com/install-windows-subsystem-linux-windows-10
+https://blog.csdn.net/cnds123/article/details/107427030
+https://www.jb51.net/article/187432.htm
+https://www.bilibili.com/video/av669266588
+
+
+
+How to install sql server configuration manager in windows 10--------------------------------------
+https://docs.microsoft.com/en-us/answers/questions/166724/sql-server-configuration-manager-not-showing-in-wi.html
+To open SQL Server Configuration Manager, on the Start Page, type SQLServerManager13.msc (for SQL Server 2016 (13.x)). 
+For other versions of SQL Server, replace 13 with the corresponding number. Clicking SQLServerManager13.msc opens the Configuration Manager. 
+To pin the Configuration Manager to the Start Page or Task Bar, right-click SQLServerManager13.msc, and then click Open file location. 
+In the Windows File Explorer, right-click SQLServerManager13.msc, and then click Pin to Start or Pin to taskbar.
+
+
+https://docs.microsoft.com/en-us/dynamics-nav/how-to--start-sql-browser-service
+To start SQL Server Browser Service
+    On the computer running SQL Server, run the SQL Server Configuration Manager.
+    On the Start menu, in the Search Programs and Files box, type SQL, and then choose SQL Server Configuration Manager.
+    In SQL Server Configuration Manager, in the navigation pane on the left, choose SQL Server Services.
+    Right-click SQL Server Browser, and then choose Properties.
+    On the Service tab of the SQL Server Browser dialog box, set the Start mode to Automatic.
+    Choose OK to return to the SQL Server Configuration Manager main page.
+    Right-click SQL Server Browser again, and then choose Start.
+
+
+
+
+
+
+
+
+
+
+
+
+Data Source=WLECNSHA1-10023\SQLSERVER2016;Initial Catalog=LE;Persist Security Info=True;User ID=sa;Password=zh@ng1981;MultipleActiveResultSets=True
+https://jack-vanlightly.com/blog/2017/9/24/how-to-connect-to-your-local-sql-server-from-inside-docker
+https://support.timextender.com/hc/en-us/articles/360042584612-Enable-Remote-Connections-to-SQL-Server-using-IP-address
+https://dba.stackexchange.com/questions/62165/i-cant-connect-to-my-servers-sql-database-via-an-ip-address  (Very Good)
+
+open SQL Server Configuration Manager;
+switch to the SQL Server Network Configuration | Protocols for SQLEXPRESS;
+double-click the TCP/IP protocol;
+select the Yes value in the Enabled field;
+switch to the IP Addresses tab;
+find the IPAll section;
+clear the TCP Dynamic Ports field in that section;
+specify the 1433 value in the TCP Port field:
+Make sure that restart DB service.
+
+
+
+
+访问本地Sql Server有两种方式。一是通过计算机名。二是通过IP。
+如果要从Docker访问本地Sql Server，一定要通过IP，不是计算机名。
+设置本地Sql Server IP的时候，一定要注意上面的步骤！1433 TCP field。
+
+
+
+172.16.210.57
+
+
+
+
+
+
+
+
+
+
+

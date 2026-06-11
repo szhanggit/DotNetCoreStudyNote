@@ -1,0 +1,195 @@
+Highlighting the Current Category------------------
+The ViewComponent base class is no exception and provides access to context objects through a set of properties. One of the
+properties is called RouteData, which provides information about how the request URL was handled by the routing system. (P169)
+
+
+
+
+
+Creating the Navigation View Component--------------------
+
+This is how ~\SportsSln\SportsStore\Components\NavigationMenuViewComponent.cs
+connecting with ~\SportsSln\SportsStore\Views\Shared\Components\NavigationMenu\Default.cshtml
+
+InvalidOperationException: The view 'Components/NavigationMenu/Default' was not found. 
+The following locations were searched: 
+/Views/Home/Components/NavigationMenu/Default.cshtml 
+/Views/Shared/Components/NavigationMenu/Default.cshtml 
+/Pages/Shared/Components/NavigationMenu/Default.cshtml
+
+
+
+不知道这是干什么用的：
+        /*
+Decorating a tag helper property with the HtmlAttributeName attribute allows me to specify a prefix for attribute names on the
+element, which in this case will be page-url-. The value of any attribute whose name begins with this prefix will be added to the
+dictionary that is assigned to the PageUrlValues property, which is then passed to the IUrlHelper.Action method to generate the
+URL for the href attribute of the a elements that the tag helper produces.         (P164)
+             */
+
+        [HtmlAttributeName(DictionaryAttributePrefix = "page-url-")]
+        public Dictionary<string, object> PageUrlValues { get; set; } = new Dictionary<string, object>();
+		
+		
+Work on Session----------------------------------------------------------		
+~\SportsSln\SportsStore\Pages\Cart.cshtml.cs		
+HttpContext.Session.SetJson("cart", Cart);
+Cart = HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();		
+		
+		
+Partial View------------------------------------------------------------		
+<partial name="ProductSummary" model="p" />
+		
+		
+View Components---------------------------------------------------
+<vc:navigation-menu />		
+		
+		
+Razor Pages--------------------------------------------------------
+<form id="@Model.ProductID" asp-page="/Cart" method="post">
+	<input type="hidden" asp-for="ProductID" />
+	<input type="hidden" name="returnUrl" value="@ViewContext.HttpContext.Request.PathAndQuery()" />
+	<span class="card-text p-1">
+		@Model.Description
+		<button type="submit" class="btn btn-success btn-sm pull-right" style="float:right">
+			Add To Cart
+		</button>
+	</span>
+</form>		
+		
+		
+Tag Helper----------------------------------------------------------
+<div page-model="@Model.PagingInfo" page-action="Index" page-classes-enabled="true"
+     page-class="btn" page-class-normal="btn-outline-dark"
+     page-class-selected="btn-primary" page-url-category="@Model.CurrentCategory" class="btn-group pull-right m-1">
+</div>
+
+
+Controller Testing----------------------------------------------------------
+Arrange repository:
+            Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
+            mock.Setup(m => m.Products).Returns((new Product[] {
+                new Product {ProductID = 1, Name = "P1"},
+                new Product {ProductID = 2, Name = "P2"}
+            }).AsQueryable<Product>());
+			
+Arrange Controller:			
+HomeController controller = new HomeController(mock.Object);
+
+Act Controller:
+IEnumerable<Product> result = (controller.Index(null) as ViewResult).ViewData.Model as IEnumerable<Product>;
+
+
+
+
+Assert:
+            Assert.True(prodArray.Length == 2);
+            Assert.Equal("P1", prodArray[0].Name);
+
+
+
+
+
+View Component Testing----------------------------------------------------------
+Arrange repository:
+            Mock<IStoreRepository> mock = new Mock<IStoreRepository>();
+            mock.Setup(m => m.Products).Returns((new Product[] {
+                new Product {ProductID = 1, Name = "P1", Category = "Apples"},
+                new Product {ProductID = 2, Name = "P2", Category = "Apples"},
+                new Product {ProductID = 3, Name = "P3", Category = "Plums"},
+                new Product {ProductID = 4, Name = "P4", Category = "Oranges"},
+                }).AsQueryable<Product>());
+
+
+Act：
+string[] results = ((IEnumerable<string>)(target.Invoke() as ViewViewComponentResult).ViewData.Model).ToArray();
+
+Assert:
+Assert.True(Enumerable.SequenceEqual(new string[] { "Apples", "Oranges", "Plums" }, results));
+
+
+
+Tag Testing----------------------------------------------------------
+            // Arrange
+            var urlHelper = new Mock<IUrlHelper>();
+            urlHelper.SetupSequence(x => x.Action(It.IsAny<UrlActionContext>())).Returns("Test/Page1").Returns("Test/Page2").Returns("Test/Page3");
+            var urlHelperFactory = new Mock<IUrlHelperFactory>();
+            urlHelperFactory.Setup(f => f.GetUrlHelper(It.IsAny<ActionContext>())).Returns(urlHelper.Object);
+            PageLinkTagHelper helper = new PageLinkTagHelper(urlHelperFactory.Object)
+            {
+                PageModel = new PagingInfo
+                {
+                    CurrentPage = 2,
+                    TotalItems = 28,
+                    ItemsPerPage = 10
+                },
+                PageAction = "Test"
+            };
+            TagHelperContext ctx = new TagHelperContext(new TagHelperAttributeList(), new Dictionary<object, object>(), "");
+            var content = new Mock<TagHelperContent>();
+            TagHelperOutput output = new TagHelperOutput("div", new TagHelperAttributeList(), (cache, encoder) => Task.FromResult(content.Object));
+
+            // Act
+            helper.Process(ctx, output);
+
+
+
+
+
+Assert.Empty(target.Lines.Where(c => c.Product == p2));
+Assert.Single(testCart.Lines);
+
+
+
+
+
+
+
+tag.Attributes["href"] = urlHelper.Action(PageAction, PageUrlValues);	//It is for generating links according to routing setting in the Startup.
+productPage comes from PageUrlValues["productPage"] = i;
+category comes from page-url-category="@Model.CurrentCategory"
+
+
+
+
+
+
+
+
+
+ViewComponent	(It can be tested in P168)
+Its view matches folder structure.
+Shopping cart in Razor pages:	http://localhost:5000/cart	(It can be tested in P187)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+			

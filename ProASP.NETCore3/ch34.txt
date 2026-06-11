@@ -1,0 +1,153 @@
+34.1.ConfiguringComponentsWithAttributes	(Just pass attributes into a component)
+http://localhost:5000/pages/blazor
+
+
+
+
+
+34.2.SettingAndReceivingBulkConfigurationSettings	(pass attribute list into a component)
+<SelectFilter values="@Cities" title="City" autofocus="true" name="city" required="true" />
+
+    [Parameter]
+    public IEnumerable<string> Values { get; set; } = Enumerable.Empty<string>();	//@Cities
+
+    [Parameter]
+    public string Title { get; set; } = "Placeholder";								//City
+
+    [Parameter(CaptureUnmatchedValues = true)]
+    public Dictionary<string, object> Attrs { get; set; }							//autofocus="true" name="city" required="true"
+	
+	
+	
+	
+	
+	
+	
+	
+34.3.ConfiguringComponentInControllerViewOrRazorPage	(Use components in a controller)
+http://localhost:5000/controllers	
+
+<component type="typeof(Advanced.Blazor.PeopleList)" render-mode="Server" param-itemcount="5" param-selecttitle="@("Loc")" />
+//Pass string "Loc" as selectTitle to the component.
+//Need to use a razor expression to express a string.
+
+Creating a Custom Binding
+A parent component can create a binding on a child component if it defines a pair of properties, one of which is assigned a data
+value and the other of which is a custom event.
+The names of the property are important: the name of the event property must be the
+same as the data property plus the word Changed.
+
+[Parameter]
+public string SelectedValue { get; set; }
+
+[Parameter]
+public EventCallback<string> SelectedValueChanged { get; set; }
+
+public async Task HandleSelect(ChangeEventArgs e) {
+SelectedValue = e.Value as string;
+await SelectedValueChanged.InvokeAsync(SelectedValue);
+}
+
+
+
+
+
+34.4.CreatingCustomEventsAndBindings		(Value can be past back from a component)
+http://localhost:5000/controllers
+    public async Task HandleSelect(ChangeEventArgs e)
+    {
+        SelectedValue = e.Value as string;
+        await CustomEvent.InvokeAsync(SelectedValue);
+    }
+
+
+34.5.CreatingCustomBinding					(A simplified way to make value past back from a component)
+http://localhost:5000/controllers
+A parent component can create a binding on a child component if it defines a pair of properties, one of which is assigned a data
+value and the other of which is a custom event.
+The names of the property are important: the name of the event property must be the
+same as the data property plus the word Changed.
+
+Notice that the Parameter attribute must be applied to both the SelectedValue and SelectedValueChanged properties.
+
+
+
+
+34.6.DisplayingChildContentInComponent		(A very basic template with passing variables)
+http://localhost:5000/controllers
+
+
+<ThemeWrapper Theme="info" Title="Location Selector">
+    <SelectFilter values="@Cities" title="@SelectTitle" @bind-SelectedValue="SelectedCity" />
+    <button class="btn btn-primary" @onclick="@(() => SelectedCity = "San Jose")">
+        Change
+    </button>
+</ThemeWrapper>
+
+
+
+
+
+
+34.7.CreatingTemplateComponents				(template with different sections)
+http://localhost:5000/controllers
+
+
+
+
+
+34.8.UsingGenericTypeParametersInTemplateComponents	(Pass types info)
+http://localhost:5000/controllers
+The template component becomes responsible for generating
+the content for each data object
+
+
+34.9.AddingFeaturesGenericTemplateComponent			(Pass values from template back to component)
+http://localhost:5000/controllers
+
+34.10.ReusingGenericTemplateComponent				(One more example)
+http://localhost:5000/pages/blazor
+
+
+
+
+
+
+34.11.CascadingParameters							(Pass values: DepartmentList.razor => TableTemplate.razor => SelectFilter.razor)
+http://localhost:5000/pages/blazor
+
+
+
+
+34.12.HandlingConnectionErrors
+http://localhost:5000/pages/blazor
+
+
+
+
+34.13.HandlingUncaughtApplicationErrors
+http://localhost:5000/pages/blazor
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

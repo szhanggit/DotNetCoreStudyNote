@@ -1,0 +1,147 @@
+libman install jquery@3.4.1 -d wwwroot/lib/jquery
+http://localhost:5000/Home/list
+
+
+Transforming Anchor Elements
+<a asp-action="index" asp-controller="home" asp-route-id="@Model.ProductId"
+class="btn btn-sm btn-info">
+Select
+</a>
+
+
+<a asp-page="/suppliers/list" class="btn btn-secondary">Suppliers</a>
+
+
+
+<div>@Url.Page("/suppliers/list")</div>		//It generateds url instead of a link.
+string url = Url.Action("List", "Home");	//It generateds url instead of a link.
+
+
+
+****************Javascript Tag*****************************
+<script asp-src-include="lib/jquery/**/*.js"></script>
+<script asp-src-include="lib/jquery**/*.min.js"></script>
+<script asp-src-include="lib/jquery**/*slim.min.js"></script>
+
+Excluding Files
+<script asp-src-include="/lib/jquery/**/*.min.js"
+asp-src-exclude="**.slim.**">
+</script>
+
+CDN
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+		asp-fallback-src="/lib/jquery/jquery.min.js"
+		asp-fallback-test="window.jQuery">
+</script>
+
+
+
+****************CSS Tag*****************************
+<link asp-href-include="/lib/twitter-bootstrap/css/*.min.css"
+asp-href-exclude="**/*-reboot*,**/*-grid*" rel="stylesheet" />
+
+
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css"
+asp-fallback-href="/lib/twitter-bootstrap/css/bootstrap.min.css"
+asp-fallback-test-class="btn"
+asp-fallback-test-property="display"
+asp-fallback-test-value="inline-block"
+rel="stylesheet" />
+
+
+Working with Image Elements
+<img src="/images/city.png" asp-append-version="true" class="m-2" />
+
+
+Using the Data Cache
+<cache>
+<h6 class="bg-primary text-white m-2 p-2">
+Cached timestamp: @DateTime.Now.ToLongTimeString()
+</h6>
+</cache>
+
+
+
+Setting Expiry
+<cache expires-after="@TimeSpan.FromSeconds(15)">
+<h6 class="bg-primary text-white m-2 p-2">
+Cached timestamp: @DateTime.Now.ToLongTimeString()
+</h6>
+</cache>
+I have used the expires-after attribute to specify that the content should be cached for 15 seconds.
+
+
+Setting a Fixed Expiry Point
+<cache expires-on="@DateTime.Parse("2100-01-01")">
+<h6 class="bg-primary text-white m-2 p-2">
+Cached timestamp: @DateTime.Now.ToLongTimeString()
+</h6>
+</cache>
+
+
+
+Setting a Last-Used Expiry Period
+<cache expires-sliding="@TimeSpan.FromSeconds(10)">
+<h6 class="bg-primary text-white m-2 p-2">
+Cached timestamp: @DateTime.Now.ToLongTimeString()
+</h6>
+</cache>
+
+If you reload the page within 10 seconds, the cached content will be used. If you wait longer than 10 seconds
+to reload the page, then the cached content will be discarded,
+
+
+
+Using Cache Variations
+<cache expires-sliding="@TimeSpan.FromSeconds(10)" vary-by-route="action">
+<h6 class="bg-primary text-white m-2 p-2">
+Cached timestamp: @DateTime.Now.ToLongTimeString()
+</h6>
+</cache>
+
+If you use two browser tabs to request http://localhost:5000/home/index and http://localhost:5000/home/list, you
+will see that each window receives its own cached content with its own expiration, since each request produces a different action
+routing value.
+
+
+
+
+
+
+
+Using the Hosting Environment Tag Helper
+<environment names="development">
+<h2 class="bg-info text-white m-2 p-2">This is Development</h2>
+</environment>
+<environment names="production">
+<h2 class="bg-danger text-white m-2 p-2">This is Production</h2>
+</environment>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

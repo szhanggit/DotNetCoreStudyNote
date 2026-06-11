@@ -1,0 +1,21 @@
+if (ModelState.GetValidationState(nameof(Product.Price)) == ModelValidationState.Valid && product.Price < 1)
+The GetValidationState method is used to see whether there have been any errors recorded for a
+model property, either from the model binding process or because the AddModelError method has been called during explicit
+validation in the action method.
+Make sure  that model binder cannot convert into a decimal value.
+
+It is for check box checking:
+[Range(typeof(bool), "true", "true", ErrorMessage="You must check the box")]
+
+
+
+libman install jquery@3.4.1 -d wwwroot/lib/jquery
+
+You may run into problems if you are unable to completely control the markup in your application, something that
+often happens when you are passing on content generated elsewhere. The result is that the jQuery validation and the browser
+validation can both operate on the form, which is just confusing to the user. To avoid this problem, you can add the novalidate
+attribute to the form element to disable browser validation.
+
+
+http://localhost:5000/api/Validation/categorykey?CategoryId=1
+http://localhost:5000/api/Validation/categorykey?Product.CategoryId=1

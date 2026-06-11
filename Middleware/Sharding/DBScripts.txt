@@ -1,0 +1,4067 @@
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_tbi_tenant_basic_information') 
+    AND type = N'U')
+BEGIN
+CREATE TABLE [dbo].[tb_tbi_tenant_basic_information](
+	[tenant_basic_info_id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [varchar](100) NOT NULL,
+	[country_code] [varchar](5) NOT NULL,
+	[timezone] [varchar](100) NOT NULL,
+	[time_format] [varchar](20) NOT NULL,
+	[currency_symbol] [varchar](5) NOT NULL,
+	[company_tax_type] [bit] NOT NULL,
+	[logo] [varchar](100) NULL,
+ CONSTRAINT [PK_tb_tbi_tenant_basic_information] PRIMARY KEY CLUSTERED 
+(
+	[tenant_basic_info_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_tti_tenant_taxrate_information') 
+    AND type = N'U')
+BEGIN
+CREATE TABLE [dbo].[tb_tti_tenant_taxrate_information](
+	[tenant_tax_rate_info_id] [int] IDENTITY(1,1) NOT NULL,
+	[tenant_basic_info_id] [int] NOT NULL,
+	[effectivity_date] [datetime] NOT NULL,
+	[company_tax_rate] [decimal](18, 2) NOT NULL,
+	[is_active] [bit] NOT NULL,
+ CONSTRAINT [PK_tb_tti_tenant_tax_information] PRIMARY KEY CLUSTERED 
+(
+	[tenant_tax_rate_info_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+ALTER TABLE [dbo].[tb_tti_tenant_taxrate_information]  WITH CHECK ADD  CONSTRAINT [FK_tb_tti_tenant_taxrate_information_tb_tbi_tenant_basic_information] FOREIGN KEY([tenant_basic_info_id])
+REFERENCES [dbo].[tb_tbi_tenant_basic_information] ([tenant_basic_info_id])
+
+ALTER TABLE [dbo].[tb_tti_tenant_taxrate_information] CHECK CONSTRAINT [FK_tb_tti_tenant_taxrate_information_tb_tbi_tenant_basic_information]
+
+END
+GO
+
+
+-- ================================================
+-- Template generated from Template Explorer using:
+-- Create Procedure (New Menu).SQL
+--
+-- Use the Specify Values for Template Parameters 
+-- command (Ctrl-Shift-M) to fill in the parameter 
+-- values below.
+--
+-- This block of comments will not be included in
+-- the definition of the procedure.
+-- ================================================
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Alvin Bernardo
+-- Create date: 08/31/2021
+-- Description:	To create tenant basic information
+-- =============================================
+DROP PROCEDURE IF EXISTS dbo.sp_ins_tenant_basic_information;  
+GO
+
+CREATE PROCEDURE sp_ins_tenant_basic_information 
+	-- Add the parameters for the stored procedure here
+	@tenant_basic_info_id INT OUTPUT,
+	@name VARCHAR(100),
+	@country_code VARCHAR(5),
+	@timezone VARCHAR(100),
+	@time_format VARCHAR(20),
+	@currency_symbol VARCHAR(5),
+	@company_tax_type BIT,
+	@logo VARCHAR(100),
+	@company_tax_rate DECIMAL(18,2)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent exa result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+		DECLARE @test as int = 0
+
+			INSERT INTO dbo.tb_tbi_tenant_basic_information (
+		    [name],
+			country_code,
+			timezone,
+			time_format,
+			currency_symbol,
+		    company_tax_type,logo)
+			VALUES
+			(
+			@name,
+			@country_code,
+			@timezone,
+			@time_format,
+			@currency_symbol,
+			@company_tax_type,
+			@logo
+			)
+
+			SET @tenant_basic_info_id  = IDENT_CURRENT('tb_tbi_tenant_basic_information')
+			
+			INSERT INTO dbo.tb_tti_tenant_taxrate_information 
+			(
+			 tenant_basic_info_id,
+			 effectivity_date,
+			 company_tax_rate,
+			 is_active
+			)
+			VALUES
+			(
+				@tenant_basic_info_id,
+				GETDATE(),
+				@company_tax_rate,
+				1
+			)
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+END
+GO
+
+-- ================================================
+-- Template generated from Template Explorer using:
+-- Create Procedure (New Menu).SQL
+--
+-- Use the Specify Values for Template Parameters 
+-- command (Ctrl-Shift-M) to fill in the parameter 
+-- values below.
+--
+-- This block of comments will not be included in
+-- the definition of the procedure.
+-- ================================================
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Alvin Bernardo
+-- Create date: 09/03/2021
+-- Description:	To select tenant basic information
+-- =============================================
+DROP PROCEDURE IF EXISTS dbo.sp_sel_tenant_basic_informations;  
+GO
+
+CREATE PROCEDURE sp_sel_tenant_basic_informations
+	-- Add the parameters for the stored procedure here
+	@tenant_basic_info_id INT 
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent exa result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+		SELECT  
+			tbi.tenant_basic_info_id AS TenantBasicInfoId,
+			tbi.[name] AS [Name],
+			tbi.country_code AS CountryCode,
+			tbi.timezone AS TimeZone,
+			tbi.time_format AS TimeFormat,
+			tbi.currency_symbol AS CurrencySymbol,
+			tbi.company_tax_type AS CompanyTaxType,
+			tbi.logo AS Logo,
+			tti.company_tax_rate AS CompanyTaxRate
+ 		FROM dbo.tb_tbi_tenant_basic_information tbi 
+		LEFT JOIN dbo.tb_tti_tenant_taxrate_information tti ON tbi.tenant_basic_info_id = tti.tenant_basic_info_id 
+
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+END
+GO
+
+-- ================================================
+-- Template generated from Template Explorer using:
+-- Create Procedure (New Menu).SQL
+--
+-- Use the Specify Values for Template Parameters 
+-- command (Ctrl-Shift-M) to fill in the parameter 
+-- values below.
+--
+-- This block of comments will not be included in
+-- the definition of the procedure.
+-- ================================================
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+DROP PROCEDURE IF EXISTS dbo.sp_upd_tenant_basic_information; 
+GO
+CREATE PROCEDURE dbo.sp_upd_tenant_basic_information 
+	-- Add the parameters for the stored procedure here
+	@tenant_basic_info_id INT OUTPUT,
+	@name VARCHAR(100),
+	@country_code VARCHAR(5),
+	@timezone VARCHAR(100),
+	@time_format VARCHAR(20),
+	@currency_symbol VARCHAR(5),
+	@company_tax_type BIT,
+	@logo VARCHAR(100),
+	@company_tax_rate DECIMAL(18,2)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+		SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+
+		    -- Insert statements for procedure here
+    UPDATE dbo.tb_tbi_tenant_basic_information
+	SET
+	[name] = @name,
+	country_code = @country_code,
+	timezone = @timezone,
+	time_format = @time_format,
+	currency_symbol = @currency_symbol,
+	company_tax_type = @company_tax_type,
+	logo = @logo
+	WHERE tenant_basic_info_id = @tenant_basic_info_id
+
+	UPDATE dbo.tb_tti_tenant_taxrate_information 
+	SET 
+	is_active = 0
+	WHERE tenant_basic_info_id = @tenant_basic_info_id
+
+	INSERT INTO dbo.tb_tti_tenant_taxrate_information
+	(
+		tenant_basic_info_id,
+		effectivity_date,
+		company_tax_rate,
+		is_active
+	)
+	VALUES
+	(
+		@tenant_basic_info_id,
+		getdate(),
+		@company_tax_rate,
+		1
+	)
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+
+
+END
+GO
+
+-- ================================================
+-- Template generated from Template Explorer using:
+-- Create Procedure (New Menu).SQL
+--
+-- Use the Specify Values for Template Parameters 
+-- command (Ctrl-Shift-M) to fill in the parameter 
+-- values below.
+--
+-- This block of comments will not be included in
+-- the definition of the procedure.
+-- ================================================
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		<Author,,Name>
+-- Create date: <Create Date,,>
+-- Description:	<Description,,>
+-- =============================================
+DROP PROCEDURE IF EXISTS dbo.sp_del_tenant_basic_information; 
+GO
+CREATE PROCEDURE dbo.sp_del_tenant_basic_information
+	-- Add the parameters for the stored procedure here
+	@tenant_basic_info_id INT 
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+    -- Insert statements for procedure here
+	    DELETE FROM dbo.tb_tti_tenant_taxrate_information WHERE tenant_basic_info_id = @tenant_basic_info_id
+	    DELETE FROM dbo.tb_tbi_tenant_basic_information WHERE tenant_basic_info_id = @tenant_basic_info_id
+
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+
+END
+GO
+
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_tbi_tenant_basic_information') 
+    AND type = N'U')
+BEGIN
+	IF COL_LENGTH('dbo.tb_tbi_tenant_basic_information', 'preferred_language') IS NULL
+		BEGIN
+			ALTER TABLE dbo.tb_tbi_tenant_basic_information ADD preferred_language varchar(100);
+		END;
+
+	IF COL_LENGTH('dbo.tb_tbi_tenant_basic_information', 'logo') IS NOT NULL
+		BEGIN
+			ALTER TABLE dbo.tb_tbi_tenant_basic_information ALTER COLUMN logo varchar(MAX);
+		END;
+
+	IF COL_LENGTH('dbo.tb_tbi_tenant_basic_information', 'is_active') IS NULL
+		BEGIN
+			ALTER TABLE dbo.tb_tbi_tenant_basic_information ADD is_active bit null;
+		END;
+     
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_tti_tenant_taxrate_information') 
+    AND type = N'U')
+BEGIN
+	IF COL_LENGTH('dbo.tb_tti_tenant_taxrate_information', 'company_tax_rate') IS NOT NULL
+		BEGIN
+			ALTER TABLE dbo.tb_tti_tenant_taxrate_information ALTER COLUMN company_tax_rate decimal(18,2) NOT NULL;
+		END;     
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_c_countries') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_c_countries](
+		[country_id] [int] IDENTITY(1,1) Primary key NOT NULL,
+		[country] [varchar](128) NOT NULL,
+		[country_code] [varchar](5) NOT NULL,
+		[currency_symbol] varchar(8),
+		[is_active] [bit] NULL
+	);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_l_languages') AND type = N'U')
+BEGIN
+	create table tb_l_languages
+	(
+		language_id int identity(1,1) primary key,
+		[language] nvarchar(128) not null,
+		is_active bit null
+	);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_tf_time_format') AND type = N'U')
+BEGIN
+	create table tb_tf_time_format
+	(
+		time_format_id int identity(1,1) primary key,
+		time_format nvarchar(32),
+		is_active bit null
+	);
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_tz_time_zone') AND type = N'U')
+BEGIN
+	create table tb_tz_time_zone
+	(
+		time_zone_id int identity(1,1) primary key,
+		time_zone nvarchar(64) not null,
+		utc_offset nvarchar(8) not null,
+	    is_active bit null
+	)
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_tz_time_zone') 
+    AND type = N'U')
+BEGIN
+	IF COL_LENGTH('dbo.tb_tz_time_zone', 'utc_offset ') IS NOT NULL
+		BEGIN
+			ALTER TABLE dbo.tb_tz_time_zone ALTER COLUMN utc_offset nvarchar(10) NOT NULL;
+		END;     
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_ubi_user_basic_information') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_ubi_user_basic_information](
+		[user_basic_info_id] INT NOT NULL PRIMARY KEY IDENTITY (1, 1),
+		[user_name] [nvarchar](250) NOT NULL UNIQUE,
+		[is_active] [bit] NOT NULL DEFAULT 0
+	)
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_tau_tenant_admin_user') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_tau_tenant_admin_user](
+		[tenant_admin_user_id] [int] PRIMARY KEY IDENTITY(1,1) NOT NULL,
+		[tenant_basic_info_id] [int] NOT NULL,
+		[user_name] [nvarchar](250) NOT NULL,
+		FOREIGN KEY ([tenant_basic_info_id]) REFERENCES [dbo].[tb_tbi_tenant_basic_information] ([tenant_basic_info_id])
+	)
+
+END
+GO
+
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_ubi_user_basic_information') 
+    AND type = N'U')
+BEGIN
+	IF COL_LENGTH('dbo.tb_ubi_user_basic_information', 'email') IS NULL
+		BEGIN
+			ALTER TABLE dbo.tb_ubi_user_basic_information ADD email nvarchar(500);
+		END;
+
+	IF COL_LENGTH('dbo.tb_ubi_user_basic_information', 'firstname') IS NULL
+		BEGIN
+			ALTER TABLE dbo.tb_ubi_user_basic_information ADD firstname nvarchar(200);
+		END;
+     
+	IF COL_LENGTH('dbo.tb_ubi_user_basic_information', 'lastname') IS NULL
+		BEGIN
+			ALTER TABLE dbo.tb_ubi_user_basic_information ADD lastname nvarchar(200);
+		END;
+		
+	IF COL_LENGTH('dbo.tb_ubi_user_basic_information', 'creation_time') IS NULL
+		BEGIN
+			ALTER TABLE dbo.tb_ubi_user_basic_information ADD creation_time datetime;
+		END;
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_a_app') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_a_app](
+		[app_id] INT NOT NULL PRIMARY KEY IDENTITY (1, 1),
+		[name] [nvarchar](200) NOT NULL UNIQUE,
+		[displayname] [nvarchar](200),
+		[key] [nvarchar](1000) NOT NULL,
+		[description] [nvarchar](2000)
+	)
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_r_role') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_r_role](
+		[role_id] INT NOT NULL PRIMARY KEY IDENTITY (1, 1),
+		[name] [nvarchar](200) NOT NULL UNIQUE,
+		[displayname] [nvarchar](200) NOT NULL,
+		[description] [nvarchar](2000),
+		[app_id] int,
+		constraint FK_ROLE_REF_APP foreign key (app_id) references "tb_a_app" (app_id)
+	)
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_ua_user_app') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_ua_user_app](
+		[user_id] [int] NOT NULL,
+		[app_id] [int] NOT NULL,
+		constraint PK_USERAPP primary key (user_id, app_id),
+		constraint FK_USERAPP_REFERENCE_USER foreign key (user_id) references "tb_ubi_user_basic_information" (user_basic_info_id),
+		constraint FK_USERAPP_REFERENCE_APP foreign key (app_id) references "tb_a_app" (app_id)
+	)
+
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_ur_user_role') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_ur_user_role](
+		[user_role_id] [int] NOT NULL PRIMARY KEY IDENTITY (1, 1),
+		[user_id] [int] NOT NULL,
+		[role_id] [int] NOT NULL,
+		[tenant_id] [int] NOT NULL,
+		constraint FK_USERROLE_REF_USER foreign key (user_id) references "tb_ubi_user_basic_information" (user_basic_info_id),
+		constraint FK_USERROLE_REF_ROLE foreign key (role_id) references "tb_r_role" (role_id),
+		constraint FK_USERROLE_REF_TENANT foreign key (tenant_id) references "tb_tbi_tenant_basic_information" (tenant_basic_info_id)
+	)
+
+END
+GO
+
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_o_operation') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_o_operation](
+		[operation_id] [int] NOT NULL PRIMARY KEY IDENTITY (1, 1),
+		[name] [nvarchar](200) NOT NULL UNIQUE,
+		[displayname] [nvarchar](200),
+		[description] [nvarchar](2000),
+		[app_id] [int] NOT NULL,
+		constraint FK_OPERATION_REF_APP foreign key (app_id) references "tb_a_app" (app_id)
+	)
+
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_m_module') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_m_module](
+		[module_id] [int] NOT NULL PRIMARY KEY IDENTITY (1, 1),
+		[name] [nvarchar](200) NOT NULL UNIQUE,
+		[displayname] [nvarchar](200) NOT NULL,
+		[description] [nvarchar](2000),
+		[app_id] [int] NOT NULL,
+		constraint FK_MODULE_REF_APP foreign key (app_id) references "tb_a_app" (app_id)
+	)
+
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_r_resource') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_r_resource](
+		[resource_id] [int] NOT NULL PRIMARY KEY IDENTITY (1, 1),
+		[module_id] [int],
+		[name] [nvarchar](200) NOT NULL UNIQUE,
+		[displayname] [nvarchar](200) NOT NULL,
+		[description] [nvarchar](2000),
+		[app_id] [int] NOT NULL,
+		constraint FK_RESOURCE_REF_MODULE foreign key (module_id) references "tb_m_module" (module_id),
+		constraint FK_RESOURCE_REF_APP foreign key (app_id) references "tb_a_app" (app_id)
+	)
+
+END
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_p_permission') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_p_permission](
+		[permission_id] [int] NOT NULL PRIMARY KEY IDENTITY (1, 1),
+		[app_id] [int] NOT NULL,
+		[role_id] [int] NOT NULL,
+		[operation_id] [int] NOT NULL,
+		[resource_id] [int] NOT NULL,
+		[description] [nvarchar](2000),
+		constraint FK_PERM_REF_APP foreign key (app_id) references "tb_a_app" (app_id),
+		constraint FK_PERM_REF_ROLE foreign key (role_id) references "tb_r_role" (role_id),
+		constraint FK_PERM_REF_OPER foreign key (operation_id) references "tb_o_operation" (operation_id),
+		constraint FK_PERM_REF_RESO foreign key (resource_id) references "tb_r_resource" (resource_id)
+	)
+
+END
+GO
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+DROP PROCEDURE IF EXISTS dbo.[sp_sel_time_format];
+GO
+-- =============================================
+-- Author:		Homer R. Sumabat
+-- Create date: 2021-09-10
+-- Description:	This stored procedure will get all the time_format
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_sel_time_format]
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	SELECT time_format_id "TimeFormatId",time_format "TimeFormat" FROM tb_tf_time_format WHERE is_active = 1;
+END
+GO
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+DROP PROCEDURE IF EXISTS dbo.[sp_sel_languages];
+GO
+-- =============================================
+-- Author:		Homer R. Sumabat
+-- Create date: 2021-09-10
+-- Description:	This stored procedure will get all the list of languages
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_sel_languages]	
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    SELECT language_id "LanguageId", [language] "Language" FROM tb_l_languages where is_active = 1;
+END
+GO
+
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+DROP PROCEDURE IF EXISTS dbo.[sp_sel_countries];
+GO
+-- =============================================
+-- Author:		Homer
+-- Create date: 2021-09-10
+-- Description:	This stored procedure will get all the list of countries
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_sel_countries] 
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    SELECT country_code "CountryCode", country "Country", currency_symbol "CurrencySymbol" FROM tb_c_countries WHERE is_active = 1;
+END
+GO
+
+--=========================================================
+--renaming stored procedure
+--=========================================================
+
+----EXEC sp_rename 'dbo.sp_sel_time_format', 'sp_sel_ref_time_format';
+----EXEC sp_rename 'dbo.sp_sel_languages', 'sp_sel_ref_languages';
+----EXEC sp_rename 'dbo.sp_sel_countries', 'sp_sel_ref_countries';
+
+--=========================================================
+--update stored prcedure related in tenant
+--=========================================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_ins_tenant_basic_information];
+GO
+CREATE PROCEDURE [dbo].[sp_ins_tenant_basic_information] 
+	-- Add the parameters for the stored procedure here
+	@tenant_basic_info_id INT OUTPUT,
+	@name VARCHAR(100),
+	@country_code VARCHAR(5),
+	@timezone VARCHAR(100),
+	@time_format VARCHAR(20),
+	@currency_symbol VARCHAR(5),
+	@preferred_language VARCHAR(100),
+	@company_tax_type BIT,
+	@logo VARCHAR(100),
+	@company_tax_rate DECIMAL(18,2),
+	@effectivity_date DATETIME
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent exa result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+		DECLARE @test as int = 0
+
+			INSERT INTO dbo.tb_tbi_tenant_basic_information (
+		    [name],
+			country_code,
+			timezone,
+			time_format,
+			currency_symbol,
+		    company_tax_type,
+			logo,
+			preferred_language,
+			is_active)
+			VALUES
+			(
+			@name,
+			@country_code,
+			@timezone,
+			@time_format,
+			@currency_symbol,
+			@company_tax_type,
+			@logo,
+			@preferred_language,
+			1
+			)
+
+			SET @tenant_basic_info_id  = IDENT_CURRENT('tb_tbi_tenant_basic_information')
+			
+			INSERT INTO dbo.tb_tti_tenant_taxrate_information 
+			(
+			 tenant_basic_info_id,
+			 effectivity_date,
+			 company_tax_rate,
+			 is_active
+			)
+			VALUES
+			(
+				@tenant_basic_info_id,
+				@effectivity_date,
+				@company_tax_rate,
+				1
+			)
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+END
+GO
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_upd_tenant_basic_information]
+GO
+CREATE PROCEDURE [dbo].[sp_upd_tenant_basic_information] 
+	-- Add the parameters for the stored procedure here
+	@tenant_basic_info_id INT OUTPUT,
+	@name VARCHAR(100),
+	@country_code VARCHAR(5),
+	@timezone VARCHAR(100),
+	@time_format VARCHAR(20),
+	@currency_symbol VARCHAR(5),
+	@company_tax_type BIT,
+	@logo VARCHAR(100),
+	@preferred_language VARCHAR(100),
+	@company_tax_rate DECIMAL(18,2),
+	@effectivity_date DATETIME
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+		SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+
+		    -- Insert statements for procedure here
+    UPDATE dbo.tb_tbi_tenant_basic_information
+	SET
+	[name] = @name,
+	country_code = @country_code,
+	timezone = @timezone,
+	time_format = @time_format,
+	currency_symbol = @currency_symbol,
+	company_tax_type = @company_tax_type,
+	preferred_language = @preferred_language,
+	logo = @logo
+	WHERE tenant_basic_info_id = @tenant_basic_info_id
+
+	UPDATE dbo.tb_tti_tenant_taxrate_information 
+	SET 
+	is_active = 0
+	WHERE tenant_basic_info_id = @tenant_basic_info_id
+
+	INSERT INTO dbo.tb_tti_tenant_taxrate_information
+	(
+		tenant_basic_info_id,
+		effectivity_date,
+		company_tax_rate,
+		is_active
+	)
+	VALUES
+	(
+		@tenant_basic_info_id,
+		@effectivity_date,
+		@company_tax_rate,
+		1
+	)
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+
+
+END
+GO
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_tenant_basic_information]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_tenant_basic_information]
+	-- Add the parameters for the stored procedure here
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent exa result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+		SELECT  
+			tbi.tenant_basic_info_id AS TenantBasicInfoId,
+			tbi.[name] AS [Name],
+			tbi.country_code AS CountryCode,
+			tbi.timezone AS TimeZone,
+			tbi.time_format AS TimeFormat,
+			tbi.currency_symbol AS CurrencySymbol,
+			tbi.company_tax_type AS CompanyTaxType,
+			tbi.preferred_language AS PreferredLanguage,
+			tbi.logo AS Logo,
+			tti.company_tax_rate AS CompanyTaxRate
+ 		FROM dbo.tb_tbi_tenant_basic_information tbi 
+		LEFT JOIN dbo.tb_tti_tenant_taxrate_information tti ON tbi.tenant_basic_info_id = tti.tenant_basic_info_id 
+		WHERE tbi.is_active = 1 AND tti.is_active = 1
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+END
+GO
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_tenant_basic_information]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_tenant_basic_information]
+	@tenant_basic_info_id INT
+AS
+BEGIN
+    -- SET NOCOUNT ON added to prevent extra result sets from
+    -- interfering with SELECT statements.
+    SET NOCOUNT ON
+
+    -- Insert statements for procedure here
+		SELECT  
+			tbi.tenant_basic_info_id AS TenantBasicInfoId,
+			tbi.[name] AS [Name],
+			tbi.country_code AS CountryCode,
+			tbi.timezone AS TimeZone,
+			tbi.time_format AS TimeFormat,
+			tbi.currency_symbol AS CurrencySymbol,
+			tbi.company_tax_type AS CompanyTaxType,
+			tbi.logo AS Logo,
+			tbi.preferred_language AS PreferredLanguage,
+			tti.company_tax_rate AS CompanyTaxRate
+ 		FROM dbo.tb_tbi_tenant_basic_information tbi 
+		LEFT JOIN dbo.tb_tti_tenant_taxrate_information tti ON tbi.tenant_basic_info_id = tti.tenant_basic_info_id  
+		WHERE tbi.tenant_basic_info_id = @tenant_basic_info_id AND tti.is_active = 1
+END
+GO
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_ref_sel_time_zone]
+GO
+CREATE PROCEDURE [dbo].[sp_ref_sel_time_zone] 
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	SELECT 
+		time_zone + ' ' + utc_offset "TimeZone",
+		utc_offset "UtcOffset"
+	FROM
+	tb_tz_time_zone
+	where is_active = 1;
+END
+GO
+
+--=========================================================
+--include stored procedure for tenant admin user
+DROP PROCEDURE IF EXISTS [dbo].[sp_ins_user_with_roles]
+DROP PROCEDURE IF EXISTS [dbo].[sp_ins_user]
+DROP PROCEDURE IF EXISTS [dbo].[sp_edit_list_user_roles]
+DROP TYPE IF EXISTS [dbo].[tvp_ins_user_roles_by_username]
+DROP TYPE IF EXISTS [dbo].[tvp_ins_users]
+DROP TYPE IF EXISTS [dbo].[tvp_edit_user_roles]
+GO
+
+CREATE TYPE [dbo].[tvp_ins_user_roles_by_username] AS TABLE(
+	[TenantId] [int] NOT NULL,
+	[RoleId] 			[int] NOT NULL,
+	[UserName] [nvarchar](250) NOT NULL
+)
+GO
+
+CREATE TYPE [dbo].[tvp_ins_users] AS TABLE(
+	[UserName] nvarchar(250),
+	[Email] nvarchar(500),
+	[FirstName] nvarchar(200),
+	[LastName] nvarchar(200)
+)
+GO
+
+
+CREATE TYPE [dbo].[tvp_edit_user_roles] AS TABLE(
+	[UserRoleId] [int] NOT NULL,
+	[UserId] [int] NOT NULL,
+	[RoleId] 			[int] NOT NULL,
+	[TenantId] [int] NOT NULL
+)
+GO
+
+GO
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 2021-09-17
+-- Description:	Edit User's assigned roles (Add / Delete)
+-- =============================================
+CREATE   PROCEDURE [dbo].[sp_edit_list_user_roles] 
+	-- Add the parameters for the stored procedure 
+	@UserRoles dbo.tvp_edit_user_roles READONLY,
+	@AffectedCount int = 0 OUTPUT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+		-- Add new User Roles
+		INSERT INTO dbo.tb_ur_user_role (user_id, role_id, tenant_id)
+		SELECT UserId, RoleId, TenantId
+		FROM @UserRoles
+		WHERE UserRoleId = 0
+		
+		SET @AffectedCount = @@ROWCOUNT
+		
+		-- Delete User Roles
+		DELETE FROM dbo.tb_ur_user_role
+		WHERE user_role_id IN (SELECT UserRoleId FROM @UserRoles WHERE UserRoleId <> 0)
+
+		SET @AffectedCount = @AffectedCount + @@ROWCOUNT
+		
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+END
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 2021-09-17
+-- Description:	Add New User and Assign Roles
+-- =============================================
+CREATE   PROCEDURE [dbo].[sp_ins_user_with_roles] 
+	-- Add the parameters for the stored procedure here
+	@NewUsers dbo.tvp_ins_users READONLY,
+	@UserRoles dbo.tvp_ins_user_roles_by_username READONLY,
+	@UserCount INT = 0 OUTPUT,
+	@UserRoleCount INT = 0 OUTPUT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+		
+			-- Insert into User Table first, DISTINCT users if not exist
+			INSERT INTO dbo.tb_ubi_user_basic_information (user_name, email, firstname, lastname, is_active, creation_time)
+			SELECT  DISTINCT UserName, Email, FirstName, LastName, 1, GETDATE()
+			FROM    @NewUsers AS NewUsers
+			WHERE   NOT EXISTS ( SELECT 1
+								 FROM   dbo.tb_ubi_user_basic_information AS UBI
+								 WHERE  UBI.user_name = NewUsers.UserName );
+
+			SET @UserCount = @@ROWCOUNT
+			
+			-- Then, insert into User Role tables, by matching user id from users table
+			INSERT INTO dbo.tb_ur_user_role (user_id, role_id, tenant_id)
+			SELECT NewUsers.user_basic_info_id, TAU.RoleId, TAU.TenantId
+			FROM (SELECT user_basic_info_id, user_name FROM dbo.tb_ubi_user_basic_information WHERE user_name IN (SELECT DISTINCT UserName FROM @NewUsers)) AS NewUsers
+			RIGHT JOIN @UserRoles AS TAU
+			ON NewUsers.user_name = TAU.UserName
+			WHERE NOT EXISTS (SELECT * FROM dbo.tb_ur_user_role AS UR WHERE UR.user_id = NewUsers.user_basic_info_id AND UR.role_id = TAU.RoleId AND UR.tenant_id = TAU.TenantId)
+			
+			SET @UserRoleCount = @@ROWCOUNT
+			
+        COMMIT TRANSACTION;
+		
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+		THROW
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+END
+GO
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_list_tenant_admin_user]
+GO
+
+-- Deprecate
+-- CREATE PROCEDURE [dbo].[sp_sel_list_tenant_admin_user]
+	-- -- Add the parameters for the stored procedure here
+
+-- AS
+-- BEGIN
+	-- -- SET NOCOUNT ON added to prevent extra result sets from
+	-- -- interfering with SELECT statements.
+	-- SET NOCOUNT ON;
+
+    -- -- Insert statements for procedure here
+	-- SELECT  
+		-- _adminUsers.tenant_admin_user_id AS TenantAdminUserId,
+		-- _users.user_basic_info_id AS UserBasicInfoId,
+		-- _tenant.tenant_basic_info_id AS TenantBasicInfoId,
+		-- _tenant.[name] AS TenantName,
+		-- _users.[user_name] AS UserName
+	-- FROM dbo.tb_tau_tenant_admin_user _adminUsers 
+	-- LEFT JOIN dbo.tb_tbi_tenant_basic_information _tenant ON _adminUsers.tenant_basic_info_id = _tenant.tenant_basic_info_id
+	-- LEFT JOIN dbo.tb_ubi_user_basic_information _users ON _adminUsers.[user_name] = _users.[user_name]
+
+-- END
+-- GO
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_tenant_admin_user]
+GO
+-- Deprecate
+-- CREATE PROCEDURE [dbo].[sp_sel_tenant_admin_user] 
+	-- -- Add the parameters for the stored procedure here
+	-- @TenantAdminUserId INT
+-- AS
+-- BEGIN
+	-- -- SET NOCOUNT ON added to prevent extra result sets from
+	-- -- interfering with SELECT statements.
+	-- SET NOCOUNT ON;
+
+    -- -- Insert statements for procedure here
+	-- SELECT  
+		-- _adminUsers.tenant_admin_user_id AS TenantAdminUserId,
+		-- _users.user_basic_info_id AS UserBasicInfoId,
+		-- _tenant.tenant_basic_info_id AS TenantBasicInfoId,
+		-- _tenant.[name] AS TenantName,
+		-- _users.[user_name] AS UserName
+	-- FROM dbo.tb_tau_tenant_admin_user _adminUsers 
+	-- LEFT JOIN dbo.tb_tbi_tenant_basic_information _tenant ON _adminUsers.tenant_basic_info_id = _tenant.tenant_basic_info_id
+	-- LEFT JOIN dbo.tb_ubi_user_basic_information _users ON _adminUsers.[user_name] = _users.[user_name]
+	-- WHERE _adminUsers.tenant_admin_user_id = @TenantAdminUserId	
+-- END
+-- GO
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_tenant_admin_users_by_tenant_id]
+GO
+-- Deprecate
+-- CREATE PROCEDURE [dbo].[sp_sel_tenant_admin_users_by_tenant_id]
+	-- -- Add the parameters for the stored procedure here
+	-- @TenantBasicInfoId INT
+-- AS
+-- BEGIN
+	-- -- SET NOCOUNT ON added to prevent extra result sets from
+	-- -- interfering with SELECT statements.
+	-- SET NOCOUNT ON;
+
+    -- -- Insert statements for procedure here
+	-- SELECT  
+		-- _adminUsers.tenant_admin_user_id AS TenantAdminUserId,
+		-- _users.user_basic_info_id AS UserBasicInfoId,
+		-- _tenant.tenant_basic_info_id AS TenantBasicInfoId,
+		-- _tenant.[name] AS TenantName,
+		-- _users.[user_name] AS UserName
+	-- FROM dbo.tb_tau_tenant_admin_user _adminUsers 
+	-- LEFT JOIN dbo.tb_tbi_tenant_basic_information _tenant ON _adminUsers.tenant_basic_info_id = _tenant.tenant_basic_info_id
+	-- LEFT JOIN dbo.tb_ubi_user_basic_information _users ON _adminUsers.[user_name] = _users.[user_name]
+	-- WHERE _adminUsers.tenant_basic_info_id = @TenantBasicInfoId
+-- END
+-- GO
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_tenant_admin_user_by_username]
+GO
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_user_tenant_by_user_id]
+GO
+
+CREATE PROCEDURE [dbo].[sp_sel_user_tenant_by_user_id] 
+	-- Add the parameters for the stored procedure here
+	@UserBasicInfoId int
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	SELECT  DISTINCT
+		_tenant.tenant_basic_info_id AS TenantBasicInfoId,
+		_tenant.[name] AS Name,
+		_tenant.[country_code] AS CountryCode,
+		_tenant.[timezone] AS Timezone,
+		_tenant.[time_format] AS TimeFormat,
+		_tenant.[currency_symbol] AS CurrencySymbol,
+		_tenant.[preferred_language] AS PreferredLanguage
+	FROM dbo.tb_tbi_tenant_basic_information _tenant
+	LEFT JOIN dbo.tb_ur_user_role _userRoles ON _userRoles.tenant_id = _tenant.tenant_basic_info_id
+	WHERE _userRoles.user_id = @UserBasicInfoId	
+
+END
+GO
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_user_basic_information_by_user_name]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_user_basic_information_by_user_name]
+	-- Add the parameters for the stored procedure here
+	@UserName [nvarchar](250)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	SELECT  
+		user_basic_info_id AS UserBasicInfoId, 
+		user_name AS UserName, 
+		is_active AS IsActive
+	FROM dbo.tb_ubi_user_basic_information 
+	WHERE user_name = @UserName
+END
+GO
+
+DROP PROCEDURE IF EXISTS dbo.[sp_sel_roles];
+GO
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 2021-09-17
+-- Description:	This stored procedure will get all the roles
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_sel_roles]
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Do not return Super Admin Role
+	SELECT role_id "RoleId", name "Name", displayname "DisplayName", description "Description" FROM tb_r_role
+	WHERE role_id > 1;
+END
+GO
+
+DROP PROCEDURE IF EXISTS dbo.[sp_sel_user_acess_list];
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 2021-09-20
+-- Description:	This stored procedure will get users, and their roles per tenant
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_sel_user_acess_list]
+	@RowCount int = 20,
+	@PageOffset int = 0,
+	@TenantId int = NULL,
+	@TotalCount int = 0 OUTPUT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Return rows
+	SELECT 
+		UBI.user_basic_info_id "UserId", 
+		UBI.user_name "UserName", 
+		UBI.firstname "FirstName", 
+		UBI.lastname "LastName", 
+		UBI.email "Email", 
+		Roles.role_id "RoleId", 
+		Roles.displayname "RoleDisplayName", 
+		Tenants.tenant_basic_info_id "TenantId", 
+		Tenants.name  "TenantName",
+		UBI.creation_time "CreationTime"
+	FROM (SELECT 
+		UBI.user_basic_info_id, 
+		UR.role_id
+	FROM tb_ur_user_role AS UR
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	WHERE (@TenantId IS NULL OR (UR.tenant_id = @TenantId)) AND UR.role_id > 1 -- Do not return Super Admins
+	GROUP BY UBI.user_basic_info_id, UR.role_id
+	ORDER BY UBI.user_basic_info_id DESC OFFSET @PageOffset ROWS
+	FETCH NEXT @RowCount ROWS ONLY) AS UserRoleTenant
+	LEFT JOIN dbo.tb_ur_user_role UR ON UserRoleTenant.user_basic_info_id = UR.user_id AND UserRoleTenant.role_id = UR.role_id
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	LEFT JOIN dbo.tb_tbi_tenant_basic_information Tenants ON UR.tenant_id = Tenants.tenant_basic_info_id
+	LEFT JOIN dbo.tb_r_role Roles ON UR.role_id = Roles.role_id
+	FOR JSON AUTO
+	
+	-- Count Total Rows
+	SELECT 
+		UBI.user_basic_info_id, 
+		UR.role_id
+	FROM tb_ur_user_role AS UR
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	WHERE (@TenantId IS NULL OR (UR.tenant_id = @TenantId))
+	GROUP BY UBI.user_basic_info_id, UR.role_id
+	ORDER BY UBI.user_basic_info_id DESC
+	
+
+	SET @TotalCount = @@ROWCOUNT
+END
+GO
+
+-- Insert default App
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_a_app 
+                   WHERE name = 'Ticket Xpress Operation Center')
+   BEGIN
+       INSERT INTO [dbo].[tb_a_app]
+           ([name]
+           ,[key]
+           ,[description])
+     VALUES
+           ('Ticket Xpress Operation Center'
+           ,'1234'
+           ,'Ticket Xpress Operation Center')
+   END
+END
+
+-- Insert default roles
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_r_role 
+                   WHERE name = 'SuperAdmin')
+   BEGIN
+       INSERT INTO [dbo].[tb_r_role]
+           ([name]
+           ,[displayname]
+           ,[description]
+           ,[app_id])
+     VALUES
+           ('SuperAdmin'
+           ,'Super Admin'
+           ,'Super Admin role'
+           ,1)
+   END
+END
+
+-- Insert default roles
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_r_role 
+                   WHERE name = 'Admin')
+   BEGIN
+       INSERT INTO [dbo].[tb_r_role]
+           ([name]
+           ,[displayname]
+           ,[description]
+           ,[app_id])
+     VALUES
+           ('Admin'
+           ,'Admin'
+           ,'Admin role'
+           ,1)
+   END
+END
+
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_def_auth_key') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_def_auth_key](
+		[key_name] [nvarchar](8) Unique NOT NULL,
+		[key_value] [nvarchar](256) NOT NULL	);
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_def_auth_key') 
+    AND type = N'U')
+BEGIN
+	IF COL_LENGTH('tb_def_auth_key', 'last_validate_time') IS NULL
+		BEGIN
+			ALTER TABLE dbo.tb_def_auth_key ADD last_validate_time datetime;
+		END;     
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_ubi_user_basic_information') 
+    AND type = N'U')
+BEGIN
+	IF COL_LENGTH('dbo.tb_ubi_user_basic_information', 'check_sum') IS NULL
+		BEGIN
+			ALTER TABLE dbo.tb_ubi_user_basic_information ADD check_sum nvarchar(256);
+		END;
+END
+GO
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_ur_user_role') 
+    AND type = N'U')
+BEGIN
+	IF COL_LENGTH('dbo.tb_ur_user_role', 'tenant_id') IS NOT NULL
+		BEGIN
+			ALTER TABLE dbo.tb_ur_user_role ALTER COLUMN tenant_id int null;
+		END;
+END
+GO
+
+-- =============================================
+-- Author:		Lean
+-- Create date: 10/7/2021
+-- Description: Recreate table role without index
+-- =============================================
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_r_role_temp') AND type = N'U')
+BEGIN
+	-- remove foreign keys first
+	IF EXISTS(SELECT
+    1
+    FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS 
+    WHERE CONSTRAINT_NAME ='FK_USERROLE_REF_ROLE')
+		ALTER TABLE tb_ur_user_role	DROP CONSTRAINT FK_USERROLE_REF_ROLE;
+		
+	IF EXISTS(SELECT
+    1
+    FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS 
+    WHERE CONSTRAINT_NAME ='FK_PERM_REF_ROLE')
+		ALTER TABLE tb_p_permission	DROP CONSTRAINT FK_PERM_REF_ROLE;
+
+	-- create temporary role table
+	CREATE TABLE [dbo].[tb_r_role_temp](
+		[role_id] INT NOT NULL PRIMARY KEY,
+		[name] [nvarchar](200) NOT NULL UNIQUE,
+		[displayname] [nvarchar](200) NOT NULL,
+		[description] [nvarchar](2000),
+		[app_id] int
+	)
+
+	-- copy data
+    ALTER TABLE tb_r_role SWITCH TO tb_r_role_temp;
+
+	-- drop old table and rename new
+    IF NOT EXISTS (SELECT * FROM tb_r_role) DROP TABLE tb_r_role;
+	EXEC sys.sp_rename 'tb_r_role_temp', 'tb_r_role', 'OBJECT';
+	
+	-- add constraints again
+    ALTER TABLE tb_r_role
+    ADD CONSTRAINT FK_ROLE_REF_APP
+    FOREIGN KEY (app_id) REFERENCES "tb_a_app"(app_id);
+
+    ALTER TABLE tb_ur_user_role
+    ADD CONSTRAINT FK_USERROLE_REF_ROLE
+    FOREIGN KEY (role_id) REFERENCES tb_r_role(role_id);
+
+    ALTER TABLE tb_p_permission
+    ADD CONSTRAINT FK_PERM_REF_ROLE
+    FOREIGN KEY (role_id) REFERENCES tb_r_role(role_id);
+    
+END
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+/* Update for inserting user add parameter CheckSum */
+DROP PROCEDURE IF EXISTS [dbo].[sp_ins_user_with_roles]
+DROP TYPE IF EXISTS [dbo].[tvp_ins_users]
+
+CREATE TYPE [dbo].[tvp_ins_users] AS TABLE(
+	[UserName] nvarchar(250),
+	[Email] nvarchar(500),
+	[FirstName] nvarchar(200),
+	[LastName] nvarchar(200)
+)
+GO
+
+-- =============================================
+-- Author:		Alvin
+-- Create date: 09/23/2021
+-- Description:	add check sum in adding new user with role
+-- =============================================
+CREATE   PROCEDURE [dbo].[sp_ins_user_with_roles] 
+	-- Add the parameters for the stored procedure here
+	@NewUsers dbo.tvp_ins_users READONLY,
+	@UserRoles dbo.tvp_ins_user_roles_by_username READONLY,
+	@UserCount INT = 0 OUTPUT,
+	@UserRoleCount INT = 0 OUTPUT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+		
+			-- Insert into User Table first, DISTINCT users if not exist
+			INSERT INTO dbo.tb_ubi_user_basic_information (user_name, email, firstname, lastname, is_active, creation_time, check_sum)
+			SELECT  DISTINCT UserName, Email, FirstName, LastName, 1, GETDATE(),null
+			FROM    @NewUsers AS NewUsers
+			WHERE   NOT EXISTS ( SELECT 1
+								 FROM   dbo.tb_ubi_user_basic_information AS UBI
+								 WHERE  UBI.user_name = NewUsers.UserName );
+
+			SET @UserCount = @@ROWCOUNT
+			
+			-- Then, insert into User Role tables, by matching user id from users table
+			INSERT INTO dbo.tb_ur_user_role (user_id, role_id, tenant_id)
+			SELECT NewUsers.user_basic_info_id, TAU.RoleId, TAU.TenantId
+			FROM (SELECT user_basic_info_id, user_name FROM dbo.tb_ubi_user_basic_information WHERE user_name IN (SELECT DISTINCT UserName FROM @NewUsers)) AS NewUsers
+			RIGHT JOIN @UserRoles AS TAU
+			ON NewUsers.user_name = TAU.UserName
+			WHERE NOT EXISTS (SELECT * FROM dbo.tb_ur_user_role AS UR WHERE UR.user_id = NewUsers.user_basic_info_id AND UR.role_id = TAU.RoleId AND UR.tenant_id = TAU.TenantId)
+			
+			SET @UserRoleCount = @@ROWCOUNT
+			
+        COMMIT TRANSACTION;
+		
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+		THROW
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+END
+GO
+
+
+DROP PROCEDURE IF EXISTS dbo.[sp_ins_def_auth_key];
+GO
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 2021-09-22
+-- Description:	Add 2 pairs of Key Name and Key Value
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_ins_def_auth_key] 
+@keyName nvarchar(8),
+@keyValue nvarchar(256),
+@success INT OUTPUT
+AS
+BEGIN
+	
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+		
+		IF   
+		(SELECT COUNT(*) FROM tb_def_auth_key WHERE key_name = @keyName) > 0
+		BEGIN
+			SET @success = 2
+			ROLLBACK TRANSACTION
+			RETURN
+		END
+		
+		
+		IF   
+		(SELECT COUNT(*) FROM tb_def_auth_key) < 2  
+			BEGIN
+				
+				INSERT INTO [dbo].[tb_def_auth_key]
+						   ([key_name]
+						   ,[key_value])
+					 VALUES
+						   (@keyName
+						   ,@keyValue)
+			
+				SET @success = 1
+				
+			END
+			
+		ELSE 
+			BEGIN
+				SET @success = 3
+			END
+
+	
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+END
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 2021-09-24
+-- Description:	This stored procedure will update the last validated time 
+-- =============================================
+DROP PROCEDURE IF EXISTS dbo.sp_upd_key_validatetime; 
+GO
+CREATE PROCEDURE dbo.sp_upd_key_validatetime 
+	@keyName [nvarchar](8)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+		SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+			UPDATE dbo.tb_def_auth_key
+			SET last_validate_time = GETUTCDATE()
+			WHERE key_name = @keyName
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+END
+GO
+
+DROP PROCEDURE IF EXISTS dbo.[sp_sel_all_keys];
+GO
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 2021-09-24
+-- Description:	This stored procedure will return all keys
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_sel_all_keys]
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	SELECT key_name "KeyName", key_value "KeyValue", last_validate_time "LastValidateTime" FROM [dbo].[tb_def_auth_key]
+	
+    SET NOCOUNT OFF;
+END
+GO
+-- =============================================
+-- Author:		ALvin Bernardo
+-- Create date: 09/28/2021
+-- Description:	Select user by role
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_user_basic_information_by_role]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_user_basic_information_by_role]
+	-- Add the parameters for the stored procedure here
+	@RoleId INT,
+	@RowCount INT,
+	@PageOffset INT,
+	@TotalCount INT OUTPUT
+AS
+BEGIN
+	
+	SELECT  
+		_users.user_basic_info_id AS UserBasicInfoId,
+		_roles.role_id AS RoleId,
+		_roles.[name] AS [Role],
+		_users.[user_name] AS UserName, 
+		_users.email AS Email,
+		_users.creation_time AS CreatedDate
+	FROM dbo.tb_ur_user_role _user_roles
+	LEFT JOIN dbo.tb_r_role _roles ON _user_roles.role_id = _roles.role_id
+	LEFT JOIN dbo.tb_ubi_user_basic_information _users ON _user_roles.[user_id] = _users.user_basic_info_id
+	WHERE _roles.role_id = @RoleId
+	GROUP BY 
+		_users.user_basic_info_id,
+		_roles.role_id,
+		_roles.[name],
+		_users.[user_name],
+		_users.email,
+		_users.creation_time
+    ORDER BY _roles.role_id, _users.[user_name]
+    OFFSET @PageOffset ROWS
+	FETCH NEXT @RowCount ROWS ONLY
+
+    SET @TotalCount = @@ROWCOUNT
+
+
+END
+GO
+
+-- =============================================
+-- Author:		Alvin Bernardo
+-- Create date: 09/28/2021
+-- Description:	To create a super admin with out tenant
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_ins_super_admin_user]
+GO
+CREATE PROCEDURE  [dbo].[sp_ins_super_admin_user]
+	@UserName NVARCHAR(250),
+	@Email NVARCHAR(500),
+	@FirstName NVARCHAR(200),
+	@LastName NVARCHAR(200),
+	@Check_Sum NVARCHAR(250),
+	@RoleId INT,
+	@UserBasicInfoId INT OUTPUT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+		SET NOCOUNT ON;
+
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+			INSERT INTO dbo.tb_ubi_user_basic_information 
+			(
+				[user_name],
+				email,
+				firstname,
+				lastname,
+				creation_time,
+				check_sum,
+				is_active
+			)
+			VALUES
+			(
+				@UserName,
+				@Email,
+				@FirstName,
+				@LastName,
+				getdate(),
+				@Check_Sum,
+				1
+			);
+
+
+		    SELECT  
+				@UserBasicInfoId = user_basic_info_id
+			FROM dbo.tb_ubi_user_basic_information
+			WHERE email = @Email AND [user_name] = @UserName
+
+		    INSERT INTO dbo.tb_ur_user_role 
+			(
+			  [user_id],
+			  role_id,
+			  tenant_id
+			)
+			VALUES
+			(
+				@UserBasicInfoId,
+				@RoleId,
+				null
+			);
+
+
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+END
+GO
+
+--==============================================
+--update [dbo].[sp_sel_tenant_basic_information]
+-- change PrefferedLanguage to Language
+--==============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_tenant_basic_information]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_tenant_basic_information]
+	@tenant_basic_info_id INT
+AS
+BEGIN
+    SET NOCOUNT ON
+
+		SELECT  
+			tbi.tenant_basic_info_id AS TenantBasicInfoId,
+			tbi.[name] AS [Name],
+			tbi.country_code AS CountryCode,
+			tbi.timezone AS TimeZone,
+			tbi.time_format AS TimeFormat,
+			tbi.currency_symbol AS CurrencySymbol,
+			tbi.company_tax_type AS CompanyTaxType,
+			tbi.logo AS Logo,
+			tbi.preferred_language AS Language,
+			tti.effectivity_date AS EffectivityDate,
+			tti.company_tax_rate AS CompanyTaxRate
+ 		FROM dbo.tb_tbi_tenant_basic_information tbi 
+		LEFT JOIN dbo.tb_tti_tenant_taxrate_information tti ON tbi.tenant_basic_info_id = tti.tenant_basic_info_id  
+		WHERE tbi.tenant_basic_info_id = @tenant_basic_info_id AND tti.is_active = 1
+END
+GO
+--==============================================
+--update [dbo].[sp_sel_tenant_basic_informations]
+-- change remove un neccessary column in select
+--==============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_tenant_basic_informations]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_tenant_basic_informations]
+	-- Add the parameters for the stored procedure here
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+		SELECT  
+			tbi.tenant_basic_info_id AS TenantBasicInfoId,
+			tbi.[name] AS [Name],
+			_country.country AS Country,
+			tbi.company_tax_type AS CompanyTaxType,
+			tti.company_tax_rate AS CompanyTaxRate
+ 		FROM dbo.tb_tbi_tenant_basic_information tbi 
+		LEFT JOIN dbo.tb_tti_tenant_taxrate_information tti ON tbi.tenant_basic_info_id = tti.tenant_basic_info_id
+		LEFT JOIN dbo.tb_c_countries _country ON tbi.country_code = _country.country_code
+		WHERE tbi.is_active = 1 AND tti.is_active = 1
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+END
+GO
+--==============================================
+--update [dbo].[sp_ref_sel_time_zone]
+-- change to sys.time_zone_info;
+--==============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_ref_sel_time_zone]
+GO
+CREATE PROCEDURE [dbo].[sp_ref_sel_time_zone] 
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	SELECT 
+		[name] "TimeZone",
+		CONCAT(name,' ','UTC ',current_utc_offset) "UtcOffset"
+	FROM
+	sys.time_zone_info;
+END
+GO
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_user_roles_by_user_id]
+GO
+-- =============================================
+-- Author:		Alvin Bernardo
+-- Create date: 10/01/2021
+-- Description:	Select user by userId with roles
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_sel_user_roles_by_user_id]
+	-- Add the parameters for the stored procedure here
+	@UserBasicInfoId INT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	SELECT  
+		_role.role_id AS RoleId,
+		_role.name AS [Name],
+		_role.displayname AS DisplayName
+	FROM dbo.tb_ur_user_role _userRole
+	LEFT JOIN dbo.tb_r_role _role ON _userRole.role_id = _role.role_id
+	WHERE _userRole.user_id = @UserBasicInfoId
+END
+GO
+-- =============================================
+-- Author:		Alvin Bernardo
+-- Create date: 10/04/2021
+-- Description:	Update insert tenant, change logo from varchar(100) to varchar(max)
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_ins_tenant_basic_information] 
+GO
+CREATE PROCEDURE [dbo].[sp_ins_tenant_basic_information] 
+	-- Add the parameters for the stored procedure here
+	@tenant_basic_info_id INT OUTPUT,
+	@name VARCHAR(100),
+	@country_code VARCHAR(5),
+	@timezone VARCHAR(100),
+	@time_format VARCHAR(20),
+	@currency_symbol VARCHAR(5),
+	@preferred_language VARCHAR(100),
+	@company_tax_type BIT,
+	@logo VARCHAR(MAX),
+	@company_tax_rate DECIMAL(18,2),
+	@effectivity_date DATETIME
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent exa result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+		DECLARE @test as int = 0
+
+			INSERT INTO dbo.tb_tbi_tenant_basic_information (
+		    [name],
+			country_code,
+			timezone,
+			time_format,
+			currency_symbol,
+		    company_tax_type,
+			logo,
+			preferred_language,
+			is_active)
+			VALUES
+			(
+			@name,
+			@country_code,
+			@timezone,
+			@time_format,
+			@currency_symbol,
+			@company_tax_type,
+			@logo,
+			@preferred_language,
+			1
+			)
+
+			SET @tenant_basic_info_id  = IDENT_CURRENT('tb_tbi_tenant_basic_information')
+			
+			INSERT INTO dbo.tb_tti_tenant_taxrate_information 
+			(
+			 tenant_basic_info_id,
+			 effectivity_date,
+			 company_tax_rate,
+			 is_active
+			)
+			VALUES
+			(
+				@tenant_basic_info_id,
+				@effectivity_date,
+				@company_tax_rate,
+				1
+			)
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+END
+GO
+-- =============================================
+-- Author:		Alvin Bernardo
+-- Create date: 10/04/2021
+-- Description:	Update update tenant, change logo from varchar(100) to varchar(max)
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_upd_tenant_basic_information] 
+GO
+CREATE PROCEDURE [dbo].[sp_upd_tenant_basic_information] 
+	-- Add the parameters for the stored procedure here
+	@tenant_basic_info_id INT OUTPUT,
+	@name VARCHAR(100),
+	@country_code VARCHAR(5),
+	@timezone VARCHAR(100),
+	@time_format VARCHAR(20),
+	@currency_symbol VARCHAR(5),
+	@company_tax_type BIT,
+	@logo VARCHAR(MAX),
+	@preferred_language VARCHAR(100),
+	@company_tax_rate DECIMAL(18,2),
+	@effectivity_date DATETIME
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+		SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+
+		    -- Insert statements for procedure here
+    UPDATE dbo.tb_tbi_tenant_basic_information
+	SET
+	[name] = @name,
+	country_code = @country_code,
+	timezone = @timezone,
+	time_format = @time_format,
+	currency_symbol = @currency_symbol,
+	company_tax_type = @company_tax_type,
+	preferred_language = @preferred_language,
+	logo = @logo
+	WHERE tenant_basic_info_id = @tenant_basic_info_id
+
+	UPDATE dbo.tb_tti_tenant_taxrate_information 
+	SET 
+	is_active = 0
+	WHERE tenant_basic_info_id = @tenant_basic_info_id
+
+	INSERT INTO dbo.tb_tti_tenant_taxrate_information
+	(
+		tenant_basic_info_id,
+		effectivity_date,
+		company_tax_rate,
+		is_active
+	)
+	VALUES
+	(
+		@tenant_basic_info_id,
+		@effectivity_date,
+		@company_tax_rate,
+		1
+	)
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+
+
+END
+GO
+
+
+-- =============================================
+-- Author: Alvin Bernardo
+-- Create date: 10/05/2021
+-- Description: Soft delete in tenant
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_del_tenant_basic_information]
+GO
+CREATE PROCEDURE [dbo].[sp_del_tenant_basic_information]
+-- Add the parameters for the stored procedure here
+@tenant_basic_info_id INT
+AS
+BEGIN
+-- SET NOCOUNT ON added to prevent extra result sets from
+-- interfering with SELECT statements.
+SET NOCOUNT ON;
+
+ SET NOCOUNT, XACT_ABORT ON;
+
+ BEGIN TRY
+
+ BEGIN TRANSACTION;
+-- Insert statements for procedure here
+Update dbo.tb_tti_tenant_taxrate_information
+SET is_active = 0
+WHERE tenant_basic_info_id = @tenant_basic_info_id
+COMMIT TRANSACTION;
+
+ UPDATE dbo.tb_tti_tenant_taxrate_information
+SET is_active = 0
+WHERE tenant_basic_info_id = @tenant_basic_info_id
+
+ END TRY
+BEGIN CATCH
+
+ IF @@TRANCOUNT > 0
+BEGIN
+ROLLBACK TRANSACTION
+END;
+
+ THROW;
+END CATCH;
+
+ SET NOCOUNT, XACT_ABORT OFF;
+
+END
+GO
+
+DROP PROCEDURE IF EXISTS dbo.[sp_sel_roles];
+GO
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 2021-10-08
+-- Description:	This stored procedure will get all the roles except Super Admin role
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_sel_roles]
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Do not return Super Admin Role
+	SELECT role_id "RoleId", name "Name", displayname "DisplayName", description "Description" FROM tb_r_role
+	WHERE role_id > 1;
+END
+GO
+
+
+DROP PROCEDURE IF EXISTS dbo.[sp_sel_user_acess_list];
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 2021-10-08
+-- Description:	This stored procedure will get users, and their roles per tenant (excluding Super Admin roles)
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_sel_user_acess_list]
+	@RowCount int = 20,
+	@PageOffset int = 0,
+	@TenantId int = NULL,
+	@TotalCount int = 0 OUTPUT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Return rows
+	SELECT 
+		UBI.user_basic_info_id "UserId", 
+		UBI.user_name "UserName", 
+		UBI.firstname "FirstName", 
+		UBI.lastname "LastName", 
+		UBI.email "Email", 
+		Roles.role_id "RoleId", 
+		Roles.displayname "RoleDisplayName", 
+		Tenants.tenant_basic_info_id "TenantId", 
+		Tenants.name  "TenantName",
+		UBI.creation_time "CreationTime"
+	FROM (SELECT 
+		UBI.user_basic_info_id, 
+		UR.role_id
+	FROM tb_ur_user_role AS UR
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	WHERE (@TenantId IS NULL OR (UR.tenant_id = @TenantId)) AND UR.role_id > 1 -- Do not return Super Admins
+	GROUP BY UBI.user_basic_info_id, UR.role_id
+	ORDER BY UBI.user_basic_info_id DESC OFFSET @PageOffset ROWS
+	FETCH NEXT @RowCount ROWS ONLY) AS UserRoleTenant
+	LEFT JOIN dbo.tb_ur_user_role UR ON UserRoleTenant.user_basic_info_id = UR.user_id AND UserRoleTenant.role_id = UR.role_id
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	LEFT JOIN dbo.tb_tbi_tenant_basic_information Tenants ON UR.tenant_id = Tenants.tenant_basic_info_id
+	LEFT JOIN dbo.tb_r_role Roles ON UR.role_id = Roles.role_id
+	FOR JSON AUTO
+	
+	-- Count Total Rows
+	SELECT 
+		UBI.user_basic_info_id, 
+		UR.role_id
+	FROM tb_ur_user_role AS UR
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	WHERE (@TenantId IS NULL OR (UR.tenant_id = @TenantId))
+	GROUP BY UBI.user_basic_info_id, UR.role_id
+	ORDER BY UBI.user_basic_info_id DESC
+	
+
+	SET @TotalCount = @@ROWCOUNT
+END
+GO
+
+
+----------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+-- =============================================
+-- Author:		Lean
+-- Create date: 10/11/2021
+-- Description: Drop unused tables
+-- =============================================
+IF object_id('tb_tz_time_zone', 'U') IS NOT NULL
+DROP TABLE tb_tz_time_zone;
+
+IF object_id('tb_tf_time_format', 'U') IS NOT NULL
+DROP TABLE tb_tf_time_format;
+
+-- =============================================
+-- Author:		Lean
+-- Create date: 10/18/2021
+-- Description: Tenant Config Table
+-- =============================================
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_tc_tenant_config') AND type = N'U')
+BEGIN
+	CREATE TABLE [dbo].[tb_tc_tenant_config](
+		[tenantconfig_id] [int] IDENTITY(1,1) Primary key NOT NULL,
+		[tenant_id] [int] NOT NULL,
+		[configtype] nvarchar(128) NOT NULL,
+		[configname] nvarchar(128) NOT NULL,
+		[version] nvarchar(10) NULL,
+		[value] [nvarchar](128),
+        [comment] [nvarchar](1000),
+        creation_time datetime
+		constraint FK_TENANTCONFIG_REF_TENANT foreign key (tenant_id) references "tb_tbi_tenant_basic_information" (tenant_basic_info_id)
+	);
+END
+GO
+
+
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 2021-10-11
+-- Description:	Fix namings of Stored Procedures
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('dbo.sp_sel_ref_time_format'))
+   EXEC sp_rename 'dbo.sp_sel_time_format', 'sp_sel_ref_time_format';
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('dbo.sp_sel_ref_languages'))
+   EXEC sp_rename 'dbo.sp_sel_languages', 'sp_sel_ref_languages';
+GO
+
+IF NOT EXISTS (SELECT * FROM sys.objects WHERE type = 'P' AND OBJECT_ID = OBJECT_ID('dbo.sp_sel_ref_countries'))
+   EXEC sp_rename 'dbo.sp_sel_countries', 'sp_sel_ref_countries';
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 10/12/2021
+-- Description:	Select user by userId with roles. Added TenantId column.
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_user_roles_by_user_id]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_user_roles_by_user_id]
+	-- Add the parameters for the stored procedure here
+	@UserBasicInfoId INT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    -- Insert statements for procedure here
+	SELECT  
+		_role.role_id AS RoleId,
+		_role.name AS [Name],
+		_role.displayname AS DisplayName,
+		_userRole.tenant_id AS TenantId
+	FROM dbo.tb_ur_user_role _userRole
+	LEFT JOIN dbo.tb_r_role _role ON _userRole.role_id = _role.role_id
+	WHERE _userRole.user_id = @UserBasicInfoId
+END
+GO
+
+
+DROP PROCEDURE IF EXISTS dbo.[sp_sel_user_acess_list];
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 2021-10-08
+-- Description:	This stored procedure will get users, and their roles per tenant (excluding Super Admin roles)
+-- Update (2021-10-08): Add tenant filter to user role as well
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_sel_user_acess_list]
+	@RowCount int = 20,
+	@PageOffset int = 0,
+	@TenantId int = NULL,
+	@TotalCount int = 0 OUTPUT
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Return rows
+	SELECT 
+		UBI.user_basic_info_id "UserId", 
+		UBI.user_name "UserName", 
+		UBI.firstname "FirstName", 
+		UBI.lastname "LastName", 
+		UBI.email "Email", 
+		Roles.role_id "RoleId", 
+		Roles.displayname "RoleDisplayName", 
+		Tenants.tenant_basic_info_id "TenantId", 
+		Tenants.name  "TenantName",
+		UBI.creation_time "CreationTime"
+	FROM (SELECT 
+		UBI.user_basic_info_id, 
+		UR.role_id
+	FROM tb_ur_user_role AS UR
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	WHERE (@TenantId IS NULL OR (UR.tenant_id = @TenantId)) AND UR.role_id > 1 -- Do not return Super Admins
+	GROUP BY UBI.user_basic_info_id, UR.role_id
+	ORDER BY UBI.user_basic_info_id DESC OFFSET @PageOffset ROWS
+	FETCH NEXT @RowCount ROWS ONLY) AS UserRoleTenant
+	LEFT JOIN dbo.tb_ur_user_role UR ON UserRoleTenant.user_basic_info_id = UR.user_id AND UserRoleTenant.role_id = UR.role_id AND (@TenantId IS NULL OR (UR.tenant_id = @TenantId))
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	LEFT JOIN dbo.tb_tbi_tenant_basic_information Tenants ON UR.tenant_id = Tenants.tenant_basic_info_id
+	LEFT JOIN dbo.tb_r_role Roles ON UR.role_id = Roles.role_id
+	FOR JSON AUTO
+	
+	-- Count Total Rows
+	SELECT 
+		UBI.user_basic_info_id, 
+		UR.role_id
+	FROM tb_ur_user_role AS UR
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	WHERE (@TenantId IS NULL OR (UR.tenant_id = @TenantId))
+	GROUP BY UBI.user_basic_info_id, UR.role_id
+	ORDER BY UBI.user_basic_info_id DESC
+	
+
+	SET @TotalCount = @@ROWCOUNT
+END
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 10/13/2021
+-- Description:	Select Permissions by Application Name
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_permissions_by_app_name]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_permissions_by_app_name]
+	-- Add the parameters for the stored procedure here
+	@ApplicationName nvarchar(200)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    SELECT  role.name 'RoleName',
+		operation.name 'OperationName',
+		resource.name 'ResourceName',
+		permission.description 'Description',
+		app.name 'AppName'
+	FROM    tb_p_permission permission
+	LEFT JOIN tb_a_app app
+	ON     permission.[app_id] = app.[app_id]
+			AND app.[name] = @ApplicationName
+	LEFT JOIN tb_r_role [role]
+	ON permission.[role_id] = [role].role_id
+	LEFT JOIN tb_o_operation [operation]
+	ON permission.[operation_id] = [operation].operation_id
+	LEFT JOIN tb_r_resource [resource]
+	ON permission.[resource_id] = [resource].resource_id
+END
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 10/18/2021
+-- Description:	Select All Configs for given tenant
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_all_configs_by_tenant_id]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_all_configs_by_tenant_id]
+	-- Add the parameters for the stored procedure here
+	@TenantId int
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    SELECT [tenant_id] 'TenantId',
+			[configtype] 'ConfigType',
+			[configname] 'ConfigName',
+			[version] 'Version',
+			[value] 'Value',
+			[comment] 'Comment'
+	FROM tb_tc_tenant_config
+	WHERE tenant_id = @TenantId
+END
+GO
+
+
+/****** Object:  StoredProcedure [dbo].[sp_upd_user_tenants]    Script Date: 10/18/2021 10:07:00 AM ******/
+DROP PROCEDURE IF EXISTS [dbo].[sp_upd_user_tenants]
+GO
+
+/****** Object:  StoredProcedure [dbo].[sp_upd_user_tenants]    Script Date: 10/18/2021 10:07:00 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+
+-- =============================================
+-- Author:		H. Sumabat
+-- Create date: 10/14/2021
+-- Description:	This stored procedure was made to update the user tenants
+
+-- Sample:
+/*
+
+EXEC [dbo].[sp_upd_user_tenants] @UserBasicInfoId =1
+	, @TenantsPerRole =N'[{
+    "roleId": 1,
+    "tenants":[1,2]
+},
+{
+    "roleId": 2,
+    "tenants":[1,2,3]
+}]'
+*/
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_upd_user_tenants]
+	@UserBasicInfoId int,
+	@TenantsPerRole nvarchar(max)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+
+	DELETE FROM dbo.tb_ur_user_role where [user_id] = @UserBasicInfoId;
+
+	INSERT INTO dbo.tb_ur_user_role([user_id], [role_id], tenant_id)
+	SELECT
+		@UserBasicInfoId
+		, a.RoleId
+		,Tenants = c.Value
+	FROM
+		OPENJSON(@TenantsPerRole)
+		WITH
+			(
+				RoleId INT N'$.RoleId'
+				,Tenants NVARCHAR(MAX) AS JSON
+			) AS a
+		CROSS APPLY
+			OPENJSON(a.tenants) as c;
+
+	SELECT @UserBasicInfoId;
+END
+GO
+
+
+/****** Object:  StoredProcedure [dbo].[sp_del_user_tenants]    Script Date: 10/18/2021 4:22:21 PM ******/
+DROP PROCEDURE IF EXISTS [dbo].[sp_del_user_tenants]
+GO
+
+/****** Object:  StoredProcedure [dbo].[sp_del_user_tenants]    Script Date: 10/18/2021 4:22:21 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+-- =============================================
+-- Author:		h sumabat
+-- Create date: October 10, 2021
+-- Description:	<Description,,>
+-- =============================================
+CREATE PROCEDURE [dbo].[sp_del_user_tenants]
+	@id int
+AS
+BEGIN
+	DELETE FROM tb_ur_user_role WHERE [user_id] = @id;
+	DELETE FROM tb_ubi_user_basic_information WHERE user_basic_info_id = @id;
+
+	SELECT @id;
+END
+GO
+
+
+
+-- =============================================
+-- Author:		Lean
+-- Create date: 10/12/2021
+-- Description: Initial Module Data
+-- =============================================
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_m_module 
+                   WHERE name = 'UserManagement')
+   BEGIN
+      INSERT INTO [dbo].[tb_m_module]
+            ([name]
+            ,[displayname]
+            ,[description]
+            ,[app_id])
+      VALUES
+            ('UserManagement'
+            ,'User Management'
+            ,''
+            ,1)
+   END
+END
+
+-- =============================================
+-- Author:		Lean
+-- Create date: 10/12/2021
+-- Description: Initial Resource Data
+-- =============================================
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_r_resource 
+                   WHERE name = 'User')
+   BEGIN
+      INSERT INTO [dbo].[tb_r_resource]
+            ([module_id]
+            ,[name]
+            ,[displayname]
+            ,[description]
+            ,[app_id])
+      VALUES
+            (1
+            ,'User'
+            ,'User'
+            ,''
+            ,1)
+   END
+END
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_r_resource 
+                   WHERE name = 'Group')
+   BEGIN
+      INSERT INTO [dbo].[tb_r_resource]
+            ([module_id]
+            ,[name]
+            ,[displayname]
+            ,[description]
+            ,[app_id])
+      VALUES
+            (1
+            ,'Group'
+            ,'Group'
+            ,''
+            ,1)
+   END
+END
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_r_resource 
+                   WHERE name = 'Tenant')
+   BEGIN
+      
+      INSERT INTO [dbo].[tb_r_resource]
+            ([module_id]
+            ,[name]
+            ,[displayname]
+            ,[description]
+            ,[app_id])
+      VALUES
+            (1
+            ,'Tenant'
+            ,'Tenant'
+            ,''
+            ,1)
+   END
+END
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_r_resource 
+                   WHERE name = 'SuperAdmin')
+   BEGIN
+      
+      INSERT INTO [dbo].[tb_r_resource]
+            ([module_id]
+            ,[name]
+            ,[displayname]
+            ,[description]
+            ,[app_id])
+      VALUES
+            (1
+            ,'SuperAdmin'
+            ,'SuperAdmin'
+            ,''
+            ,1)
+   END
+END
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_r_resource 
+                   WHERE name = 'Admin')
+   BEGIN
+      
+      INSERT INTO [dbo].[tb_r_resource]
+            ([module_id]
+            ,[name]
+            ,[displayname]
+            ,[description]
+            ,[app_id])
+      VALUES
+            (1
+            ,'Admin'
+            ,'Admin'
+            ,''
+            ,1)
+   END
+END
+-- =============================================
+-- Author:		Lean
+-- Create date: 10/12/2021
+-- Description: Initial Operation Data
+-- =============================================
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_o_operation 
+                   WHERE name = 'Create')
+   BEGIN
+      INSERT INTO [dbo].[tb_o_operation]
+            ([name]
+            ,[displayname]
+            ,[description]
+            ,[app_id])
+      VALUES
+            ('Create'
+            ,'Create'
+            ,''
+            ,1)
+   END
+END
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_o_operation 
+                   WHERE name = 'Edit')
+   BEGIN
+      INSERT INTO [dbo].[tb_o_operation]
+            ([name]
+            ,[displayname]
+            ,[description]
+            ,[app_id])
+      VALUES
+            ('Edit'
+            ,'Edit'
+            ,''
+            ,1)
+   END
+END
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_o_operation 
+                   WHERE name = 'Delete')
+   BEGIN
+      INSERT INTO [dbo].[tb_o_operation]
+            ([name]
+            ,[displayname]
+            ,[description]
+            ,[app_id])
+      VALUES
+            ('Delete'
+            ,'Delete'
+            ,''
+            ,1)
+   END
+END
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_o_operation 
+                   WHERE name = 'View')
+   BEGIN
+      INSERT INTO [dbo].[tb_o_operation]
+            ([name]
+            ,[displayname]
+            ,[description]
+            ,[app_id])
+      VALUES
+            ('View'
+            ,'View'
+            ,''
+            ,1)
+   END
+END
+
+
+-- =============================================
+-- Author:		Lean
+-- Create date: 10/12/2021
+-- Description: Initial Permission Data
+-- =============================================
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_p_permission 
+                   WHERE description = 'SuperAdmin Tenants')
+   BEGIN
+      
+      INSERT INTO [dbo].[tb_p_permission]
+                  ([app_id]
+                  ,[role_id]
+                  ,[operation_id]
+                  ,[resource_id]
+                  ,[description])
+      SELECT app.app_id, role.role_id, operation.operation_id, resource.resource_id, 'SuperAdmin Tenants'
+      FROM tb_a_app app, tb_r_role role, tb_o_operation operation, tb_r_resource resource
+      WHERE app.name = 'Ticket Xpress Operation Center'
+      AND role.name = 'SuperAdmin'
+            AND ([operation].name = 'Create' OR [operation].name = 'Edit' OR [operation].name = 'View' OR [operation].name = 'Delete')
+            AND [resource].name = 'Tenant'
+   END
+END
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_p_permission 
+                   WHERE description = 'SuperAdmin Admin')
+   BEGIN
+      
+      INSERT INTO [dbo].[tb_p_permission]
+                  ([app_id]
+                  ,[role_id]
+                  ,[operation_id]
+                  ,[resource_id]
+                  ,[description])
+      SELECT app.app_id, role.role_id, operation.operation_id, resource.resource_id, 'SuperAdmin Admin'
+      FROM tb_a_app app, tb_r_role role, tb_o_operation operation, tb_r_resource resource
+      WHERE app.name = 'Ticket Xpress Operation Center'
+      AND role.name = 'SuperAdmin'
+            AND ([operation].name = 'Create' OR [operation].name = 'Edit' OR [operation].name = 'View' OR [operation].name = 'Delete')
+            AND [resource].name = 'Admin'
+   END
+END
+
+
+BEGIN
+   IF NOT EXISTS (SELECT * FROM tb_p_permission 
+                   WHERE description = 'Admin Users')
+   BEGIN
+      
+      INSERT INTO [dbo].[tb_p_permission]
+                  ([app_id]
+                  ,[role_id]
+                  ,[operation_id]
+                  ,[resource_id]
+                  ,[description])
+      SELECT app.app_id, role.role_id, operation.operation_id, resource.resource_id, 'Admin Users'
+      FROM tb_a_app app, tb_r_role role, tb_o_operation operation, tb_r_resource resource
+      WHERE app.name = 'Ticket Xpress Operation Center'
+      AND role.name = 'Admin'
+            AND ([operation].name = 'Create' OR [operation].name = 'Edit' OR [operation].name = 'View' OR [operation].name = 'Delete')
+            AND [resource].name = 'User'
+   END
+END
+
+
+
+
+
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 10/12/2021
+-- Description:	Select user by userId with roles. Added TenantId column.
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_user_acess_list]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_user_acess_list]
+	@RowCount int = 20,
+	@PageOffset int = 0,
+	@TenantId int = NULL,
+	@TotalCount int = 0 OUTPUT,
+	@Search nvarchar(128) = null
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+	-- Return rows
+	SELECT 
+		UBI.user_basic_info_id "UserId", 
+		UBI.user_name "UserName", 
+		UBI.firstname "FirstName", 
+		UBI.lastname "LastName", 
+		UBI.email "Email", 
+		Roles.role_id "RoleId", 
+		Roles.displayname "RoleDisplayName", 
+		Tenants.tenant_basic_info_id "TenantId", 
+		Tenants.name  "TenantName",
+		UBI.creation_time "CreationTime"
+	FROM (SELECT 
+		UBI.user_basic_info_id, 
+		UR.role_id
+	FROM tb_ur_user_role AS UR
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	WHERE ((@TenantId IS NULL OR (UR.tenant_id = @TenantId)) AND UR.role_id > 1) -- Do not return Super Admins
+	OR (
+		(UBI.[user_name] like @Search + '%' OR @Search is null) OR
+		(UBI.email like @Search + '%' OR @Search is null)
+	)
+	GROUP BY UBI.user_basic_info_id, UR.role_id
+	ORDER BY UBI.user_basic_info_id DESC OFFSET @PageOffset ROWS
+	FETCH NEXT @RowCount ROWS ONLY) AS UserRoleTenant
+	LEFT JOIN dbo.tb_ur_user_role UR ON UserRoleTenant.user_basic_info_id = UR.user_id AND UserRoleTenant.role_id = UR.role_id AND (@TenantId IS NULL OR (UR.tenant_id = @TenantId))
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	LEFT JOIN dbo.tb_tbi_tenant_basic_information Tenants ON UR.tenant_id = Tenants.tenant_basic_info_id
+	LEFT JOIN dbo.tb_r_role Roles ON UR.role_id = Roles.role_id
+	FOR JSON AUTO
+	
+	-- Count Total Rows
+	SELECT 
+		UBI.user_basic_info_id, 
+		UR.role_id
+	FROM tb_ur_user_role AS UR
+	LEFT JOIN dbo.tb_ubi_user_basic_information UBI ON UR.user_id = UBI.user_basic_info_id
+	WHERE (@TenantId IS NULL OR (UR.tenant_id = @TenantId))
+	GROUP BY UBI.user_basic_info_id, UR.role_id
+	ORDER BY UBI.user_basic_info_id DESC
+	
+
+	SET @TotalCount = @@ROWCOUNT
+END
+GO
+
+
+
+
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 11/18/2021
+-- Description:	Select All Configs for given tenant name
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_all_configs_by_tenant_name]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_all_configs_by_tenant_name]
+	@TenantName varchar(100)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    SELECT [tenant_id] 'TenantId',
+			[configtype] 'ConfigType',
+			[configname] 'ConfigName',
+			[version] 'Version',
+			[value] 'Value',
+			[comment] 'Comment'
+	FROM tb_tc_tenant_config Config
+	INNER JOIN tb_tbi_tenant_basic_information Tenant
+	ON Config.tenant_id = Tenant.tenant_basic_info_id
+	WHERE Tenant.[name] = @TenantName
+
+END
+GO
+
+
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 11/24/2021
+-- Description:	Program Route table
+-- =============================================
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_pr_program_route') 
+    AND type = N'U')
+BEGIN
+   
+    PRINT 'tb_pr_program_route table creating'
+    
+CREATE TABLE [dbo].[tb_pr_program_route](
+	[id] int NOT NULL IDENTITY,
+	[program_code] [nvarchar](255) NOT NULL,
+	[program_collection_code] [nvarchar](255) NOT NULL
+	CONSTRAINT PK_PROGRAM_ROUTE PRIMARY KEY (id)
+);   
+END
+GO
+
+
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 11/24/2021
+-- Description:	Select ProgramCollectionCode by ProgramCode
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_programcollectioncode_by_programcode]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_programcollectioncode_by_programcode]
+	@ProgramCode [nvarchar](255)
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    SELECT [program_collection_code] 'ProgramCollectionCode'
+	FROM tb_pr_program_route
+    WHERE program_code = @ProgramCode
+END
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 12/3/2021
+-- Description:	Select ALL ProgramCollection
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_all_programcollectioncode]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_all_programcollectioncode]
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    SELECT [program_code] 'ProgramCode', [program_collection_code] 'ProgramCollectionCode'
+	FROM tb_pr_program_route
+END
+GO
+
+
+
+/*
+Add TenantId to ProgramRoute
+*/
+IF (EXISTS (SELECT * 
+                 FROM INFORMATION_SCHEMA.TABLES 
+                 WHERE TABLE_SCHEMA = 'dbo' 
+                 AND  TABLE_NAME = 'tb_pr_program_route'))
+BEGIN
+
+	IF COL_LENGTH('dbo.tb_pr_program_route', 'tenant_id') IS NULL
+		BEGIN
+			ALTER TABLE dbo.tb_pr_program_route ADD tenant_id [int] NULL;
+			ALTER TABLE dbo.tb_pr_program_route
+			ADD constraint FK_PROGRAMROUTE_REF_TENANT foreign key (tenant_id) references "tb_tbi_tenant_basic_information" (tenant_basic_info_id)
+		END;
+END
+GO
+
+
+
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 11/24/2021
+-- Description:	Select ProgramCollectionCode by ProgramCode
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_programcollectioncode_by_programcode]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_programcollectioncode_by_programcode]
+	@ProgramCode [nvarchar](255),
+	@TenantId [int]
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    SELECT [program_collection_code] 'ProgramCollectionCode'
+	FROM tb_pr_program_route
+    WHERE program_code = @ProgramCode AND tenant_id = @TenantId
+END
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 12/3/2021
+-- Description:	Select ALL ProgramCollection
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_all_programcollectioncode]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_all_programcollectioncode]
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+    SELECT [program_code] 'ProgramCode', [program_collection_code] 'ProgramCollectionCode', [tenant_id] 'TenantId'
+	FROM tb_pr_program_route
+END
+GO
+
+
+
+/*==============================================================*/
+/* Table: "Program"                               				*/
+/*==============================================================*/
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[tb_p_program]') AND type = N'U')
+BEGIN
+	
+    PRINT 'tb_p_program table creating'
+	
+	CREATE TABLE [dbo].[tb_p_program] (
+		[id]                    INT            IDENTITY (1, 1) NOT FOR REPLICATION NOT NULL,
+		[identity_code]          VARCHAR (20)   NOT NULL,
+		[name]                  NVARCHAR (50)  NOT NULL,
+		[display_name]           NVARCHAR (200) NULL,
+		[timeoffset]            VARCHAR (6)    NOT NULL,
+		[merchant_max_fail_number] INT            NOT NULL,
+		[shop_max_fail_number]     INT            NOT NULL,
+		[terminal_max_fail_number] INT            NOT NULL,
+		[is_default_program]      BIT            DEFAULT ((0)) NOT NULL,
+		[date_format_string]      VARCHAR (25)   NULL,
+		[datetime_format_string]  VARCHAR (25)   NULL,
+		[is_edenred]				BIT				NOT NULL DEFAULT (0),
+		[active_date_format_string] VARCHAR(25)  NULL,
+		[tenant_id]					INT			 NOT NULL,
+		CONSTRAINT [PK_program_id] PRIMARY KEY NONCLUSTERED ([id] ASC),
+		CONSTRAINT [UK_program_identity_code] UNIQUE CLUSTERED ([identity_code] ASC),
+		CONSTRAINT [FK_program_ref_tenant_id] foreign key (tenant_id) references [dbo].tb_tbi_tenant_basic_information (tenant_basic_info_id)
+	);
+
+END
+GO
+
+/*==============================================================*/
+/* Table: "ProgramBarcodeSetting"                               */
+/*==============================================================*/
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].tb_pbs_program_barcode_setting') 
+    AND type = N'U')
+BEGIN
+   
+    PRINT 'tb_pbs_program_barcode_setting table creating'
+    
+    create table [dbo].tb_pbs_program_barcode_setting (
+    [id]    				  		int identity(1,1)        not null,
+	[program_id] 			  		int            not null,
+	[barcode_index]					int				not null,
+	[barcode_type]					varchar(20)		not null,
+	[is_barcode_display_text]		bit		null,
+	[is_barcode_api_enabled]		bit		null,
+    constraint PK_programbarcodesetting_id primary key (id),
+	constraint FK_programbarcodesetting_ref_program_id foreign key (program_id) references [dbo].tb_p_program (id)
+    )
+    
+END
+GO
+
+
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 02/21/2022
+-- Description:	Create Program
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_create_program]
+DROP TYPE IF EXISTS [dbo].[tvp_create_programbarcodesettings]
+GO
+
+CREATE TYPE [dbo].[tvp_create_programbarcodesettings] AS TABLE(
+	[barcode_index]		  int
+	,[barcode_type]			  varchar(20)
+	,[is_barcode_display_text]			      bit
+	,[is_barcode_api_enabled]			      bit
+)
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 12/27/2021
+-- Description:	Get Program.
+-- =============================================
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_program_by_identity_code]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_program_by_identity_code]
+	@IdentityCode nvarchar(20)
+	,@TenantId	int
+AS
+BEGIN
+    SET NOCOUNT ON
+
+		SELECT [id] "Id"
+		  ,[identity_code] "IdentityCode"
+		  ,[name] "Name"
+		  ,[display_name] "DisplayName"
+		  ,[timeoffset] "TimeOffset"
+		  ,[merchant_max_fail_number] "MerchantMaxFailNumber"
+		  ,[shop_max_fail_number] "ShopMaxFailNumber"
+		  ,[terminal_max_fail_number] "TerminalMaxFailNumber"
+		  ,[is_default_program] "IsDefaultProgram"
+		  ,[date_format_string] "DateFormatString"
+		  ,[datetime_format_string] "DateTimeFormatString"
+		  ,[is_edenred] "IsEdenred"
+		  ,[active_date_format_string] "ActiveDateFormatString"
+		  ,[tenant_id] "TenantId"
+	  FROM [dbo].[tb_p_program]
+	  WHERE [identity_code] = @IdentityCode AND [tenant_id] = @TenantId
+END
+GO
+
+-- =============================================
+-- Author:		Lean Alcabasa
+-- Create date: 12/27/2021
+-- Description:	Insert Program.
+-- =============================================
+
+CREATE PROCEDURE [dbo].[sp_create_program]
+	@NewBarcodeSettings [dbo].[tvp_create_programbarcodesettings] READONLY
+	,@Name					  	nvarchar(50)
+	,@DisplayName			  	nvarchar(200)
+	,@TimeOffset				varchar(6)
+	,@MerchantMaxFailNumber		int
+	,@ShopMaxFailNumber			int
+	,@TerminalMaxFailNumber		int
+	,@IsDefaultProgram			bit
+	,@DateFormatString			varchar(25) = NULL
+	,@DateTimeFormatString		varchar(25) = NULL
+	,@IsEdenred					bit
+	,@TenantId					int
+	,@ProgramCollectionCode		nvarchar(255) = NULL
+	,@IdentityCodeFormatted 	nvarchar(20)	= NULL OUTPUT
+AS
+BEGIN
+    SET NOCOUNT, XACT_ABORT OFF;
+
+	BEGIN TRANSACTION
+    BEGIN TRY
+
+	DECLARE @ProgramId	int
+			, @IdentityCode int
+			, @IdentityCodeStr nvarchar(255)
+			, @AfterRemoveFistCharacter	nvarchar(255)
+	
+	SET @IdentityCodeStr = (SELECT TOP (1) [identity_code] FROM [dbo].[tb_p_program]
+                            order by id desc)
+
+	SET @AfterRemoveFistCharacter = (Select right(@IdentityCodeStr, len(@IdentityCodeStr)-1))  
+
+	SET @IdentityCode = CAST(@AfterRemoveFistCharacter AS int) + 1;
+	
+	IF(@IdentityCode IS NULL)
+		SET @IdentityCode = 1
+		
+	SET @IdentityCodeFormatted = CONCAT(@TenantId, FORMAT(@IdentityCode, '00000'))
+
+	-- Insert into Program
+		INSERT INTO [dbo].[tb_p_program]
+				   ([identity_code]
+				   ,[name]
+				   ,[display_name]
+				   ,[timeoffset]
+				   ,[merchant_max_fail_number]
+				   ,[shop_max_fail_number]
+				   ,[terminal_max_fail_number]
+				   ,[is_default_program]
+				   ,[date_format_string]
+				   ,[datetime_format_string]
+				   ,[is_edenred]
+				   ,[tenant_id])
+			 VALUES
+				   (@IdentityCodeFormatted
+				   ,@Name
+				   ,@DisplayName
+				   ,@TimeOffset
+				   ,@MerchantMaxFailNumber
+				   ,@ShopMaxFailNumber
+				   ,@TerminalMaxFailNumber
+				   ,@IsDefaultProgram
+				   ,@DateFormatString
+				   ,@DateTimeFormatString
+				   ,@IsEdenred
+				   ,@TenantId)
+		
+		SET @ProgramId = SCOPE_IDENTITY()
+		
+			-- Insert into ProgramBarcodeSetting
+			IF EXISTS (SELECT 1 FROM @NewBarcodeSettings)
+			BEGIN
+					INSERT INTO [dbo].[tb_pbs_program_barcode_setting]
+				   ([program_id]
+				   ,[barcode_index]
+				   ,[barcode_type]
+				   ,[is_barcode_display_text]
+				   ,[is_barcode_api_enabled])
+					 SELECT
+						@ProgramId
+						,[barcode_index]
+						,[barcode_type]
+						,[is_barcode_display_text]
+						,[is_barcode_api_enabled]
+						FROM @NewBarcodeSettings
+			END
+				
+	-- Insert into Transaction Log
+
+			if(@ProgramCollectionCode is not null)
+			BEGIN
+				INSERT INTO [dbo].[tb_pr_program_route]
+						   ([program_code]
+						   ,[program_collection_code]
+						   ,[tenant_id])
+					 VALUES
+						   (@ProgramId
+						   ,@ProgramCollectionCode
+						   ,@TenantId)
+			END
+	
+	SELECT 
+	[id] "Id"
+   ,[identity_code] "IdentityCode"
+   ,[name]  "Name"
+   ,[display_name] "DisplayName"
+   ,[timeoffset] "TimeOffset"
+   ,[merchant_max_fail_number] "MerchantMaxFailNumber"
+   ,[shop_max_fail_number] "ShopMaxFailNumber"
+   ,[terminal_max_fail_number] "TerminalMaxFailNumber"
+   ,[date_format_string] "DateFormatString"
+   ,[datetime_format_string] "DateTimeFormatString"
+   ,[is_edenred] "IsEdenred"
+	FROM [dbo].[tb_p_program] WHERE [identity_code] = @IdentityCodeFormatted
+	
+	COMMIT TRANSACTION
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+		  SET @IdentityCodeFormatted = NULL
+          ROLLBACK TRANSACTION
+       END;
+
+		THROW
+    END CATCH;
+
+END
+GO
+
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_ur_user_role') 
+    AND type = N'U')
+BEGIN
+	PRINT 'Drop table tb_ur_user_role'
+	DROP TABLE tb_ur_user_role
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_ua_user_app') 
+    AND type = N'U')
+BEGIN
+	PRINT 'Drop table tb_ua_user_app'
+	DROP TABLE tb_ua_user_app
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_ubi_user_basic_information') 
+    AND type = N'U')
+BEGIN
+	PRINT 'Drop table tb_ubi_user_basic_information'
+	DROP TABLE tb_ubi_user_basic_information
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_tau_tenant_admin_user') 
+    AND type = N'U')
+BEGIN
+	PRINT 'Drop table tb_tau_tenant_admin_user'
+	DROP TABLE tb_tau_tenant_admin_user
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_p_permission') 
+    AND type = N'U')
+BEGIN
+	PRINT 'Drop table tb_p_permission'
+	DROP TABLE tb_p_permission
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_o_operation') 
+    AND type = N'U')
+BEGIN
+	PRINT 'Drop table tb_o_operation'
+	DROP TABLE tb_o_operation
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_r_resource') 
+    AND type = N'U')
+BEGIN
+	PRINT 'Drop table tb_r_resource'
+	DROP TABLE tb_r_resource
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_m_module') 
+    AND type = N'U')
+BEGIN
+	PRINT 'Drop table tb_m_module'
+	DELETE FROM tb_m_module
+	DROP TABLE tb_m_module
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_r_role') 
+    AND type = N'U')
+BEGIN
+	PRINT 'Drop table tb_r_role'
+	DROP TABLE tb_r_role
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_a_app') 
+    AND type = N'U')
+BEGIN
+	PRINT 'Drop table tb_a_app'
+	DELETE FROM tb_a_app
+	DROP TABLE tb_a_app
+END
+GO
+
+IF EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'tb_def_auth_key') 
+    AND type = N'U')
+BEGIN
+	PRINT 'Drop table tb_def_auth_key'
+	DROP TABLE tb_def_auth_key
+END
+GO
+
+DROP PROCEDURE IF EXISTS sp_del_user_tenants
+DROP PROCEDURE IF EXISTS sp_edit_list_user_roles
+DROP PROCEDURE IF EXISTS sp_ins_def_auth_key
+DROP PROCEDURE IF EXISTS sp_ins_user_with_roles
+DROP PROCEDURE IF EXISTS sp_sel_all_keys
+DROP PROCEDURE IF EXISTS sp_sel_permissions_by_app_name
+DROP PROCEDURE IF EXISTS sp_sel_countries
+DROP PROCEDURE IF EXISTS sp_sel_languages
+DROP PROCEDURE IF EXISTS sp_sel_roles
+DROP PROCEDURE IF EXISTS sp_sel_time_format
+DROP PROCEDURE IF EXISTS sp_sel_user_acess_list
+DROP PROCEDURE IF EXISTS sp_sel_user_basic_information_by_role
+DROP PROCEDURE IF EXISTS sp_sel_user_basic_information_by_user_name
+DROP PROCEDURE IF EXISTS sp_sel_user_roles_by_user_id
+DROP PROCEDURE IF EXISTS sp_sel_user_tenant_by_user_id
+DROP PROCEDURE IF EXISTS sp_upd_key_validatetime
+DROP PROCEDURE IF EXISTS sp_upd_user_tenants
+
+
+
+
+ALTER TABLE [dbo].[tb_p_program]
+DROP CONSTRAINT UK_program_identity_code;
+
+ALTER TABLE [dbo].[tb_p_program] ADD  CONSTRAINT [UK_program_identity_code] UNIQUE CLUSTERED 
+(
+	[identity_code], [tenant_id] ASC
+)WITH (STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF) ON [PRIMARY]
+GO
+
+
+
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_create_program]
+GO
+
+CREATE PROCEDURE [dbo].[sp_create_program]
+	@NewBarcodeSettings [dbo].[tvp_create_programbarcodesettings] READONLY
+	,@Name					  	nvarchar(50)
+	,@DisplayName			  	nvarchar(200)
+	,@TimeOffset				varchar(6)
+	,@MerchantMaxFailNumber		int
+	,@ShopMaxFailNumber			int
+	,@TerminalMaxFailNumber		int
+	,@IsDefaultProgram			bit
+	,@DateFormatString			varchar(25) = NULL
+	,@DateTimeFormatString		varchar(25) = NULL
+	,@IsEdenred					bit
+	,@TenantId					int
+	,@ProgramCollectionCode		nvarchar(255) = NULL
+	,@IdentityCodeFormatted 	nvarchar(20)	= NULL OUTPUT
+AS
+BEGIN
+    SET NOCOUNT, XACT_ABORT OFF;
+
+	BEGIN TRANSACTION
+    BEGIN TRY
+
+	DECLARE @ProgramId	int
+			, @IdentityCode int
+			, @IdentityCodeStr nvarchar(255)
+			, @AfterRemoveFistCharacter	nvarchar(255)
+	
+	SET @IdentityCodeStr = (SELECT TOP (1) [identity_code] FROM [dbo].[tb_p_program]
+							WHERE identity_code like '%0____'
+                            order by id desc)
+
+	SET @AfterRemoveFistCharacter = (Select right(@IdentityCodeStr, len(@IdentityCodeStr)-1))  
+
+	SET @IdentityCode = CAST(@AfterRemoveFistCharacter AS int) + 1;
+	
+	IF(@IdentityCode IS NULL)
+		SET @IdentityCode = 1
+		
+	SET @IdentityCodeFormatted = CONCAT(@TenantId, FORMAT(@IdentityCode, '00000'))
+
+	-- Insert into Program
+		INSERT INTO [dbo].[tb_p_program]
+				   ([identity_code]
+				   ,[name]
+				   ,[display_name]
+				   ,[timeoffset]
+				   ,[merchant_max_fail_number]
+				   ,[shop_max_fail_number]
+				   ,[terminal_max_fail_number]
+				   ,[is_default_program]
+				   ,[date_format_string]
+				   ,[datetime_format_string]
+				   ,[is_edenred]
+				   ,[tenant_id])
+			 VALUES
+				   (@IdentityCodeFormatted
+				   ,@Name
+				   ,@DisplayName
+				   ,@TimeOffset
+				   ,@MerchantMaxFailNumber
+				   ,@ShopMaxFailNumber
+				   ,@TerminalMaxFailNumber
+				   ,@IsDefaultProgram
+				   ,@DateFormatString
+				   ,@DateTimeFormatString
+				   ,@IsEdenred
+				   ,@TenantId)
+		
+		SET @ProgramId = SCOPE_IDENTITY()
+		
+			-- Insert into ProgramBarcodeSetting
+			IF EXISTS (SELECT 1 FROM @NewBarcodeSettings)
+			BEGIN
+					INSERT INTO [dbo].[tb_pbs_program_barcode_setting]
+				   ([program_id]
+				   ,[barcode_index]
+				   ,[barcode_type]
+				   ,[is_barcode_display_text]
+				   ,[is_barcode_api_enabled])
+					 SELECT
+						@ProgramId
+						,[barcode_index]
+						,[barcode_type]
+						,[is_barcode_display_text]
+						,[is_barcode_api_enabled]
+						FROM @NewBarcodeSettings
+			END
+				
+	-- Insert into Transaction Log
+
+			if(@ProgramCollectionCode is not null)
+			BEGIN
+				INSERT INTO [dbo].[tb_pr_program_route]
+						   ([program_code]
+						   ,[program_collection_code]
+						   ,[tenant_id])
+					 VALUES
+						   (@ProgramId
+						   ,@ProgramCollectionCode
+						   ,@TenantId)
+			END
+	
+	SELECT 
+	[id] "Id"
+   ,[identity_code] "IdentityCode"
+   ,[name]  "Name"
+   ,[display_name] "DisplayName"
+   ,[timeoffset] "TimeOffset"
+   ,[merchant_max_fail_number] "MerchantMaxFailNumber"
+   ,[shop_max_fail_number] "ShopMaxFailNumber"
+   ,[terminal_max_fail_number] "TerminalMaxFailNumber"
+   ,[date_format_string] "DateFormatString"
+   ,[datetime_format_string] "DateTimeFormatString"
+   ,[is_edenred] "IsEdenred"
+	FROM [dbo].[tb_p_program] WHERE [identity_code] = @IdentityCodeFormatted
+	
+	COMMIT TRANSACTION
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+		  SET @IdentityCodeFormatted = NULL
+          ROLLBACK TRANSACTION
+       END;
+
+		THROW
+    END CATCH;
+
+END
+GO
+
+
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_create_program]
+GO
+
+CREATE PROCEDURE [dbo].[sp_create_program]
+	@NewBarcodeSettings [dbo].[tvp_create_programbarcodesettings] READONLY
+	,@Name					  	nvarchar(50)
+	,@DisplayName			  	nvarchar(200)
+	,@TimeOffset				varchar(6)
+	,@MerchantMaxFailNumber		int
+	,@ShopMaxFailNumber			int
+	,@TerminalMaxFailNumber		int
+	,@IsDefaultProgram			bit
+	,@DateFormatString			varchar(25) = NULL
+	,@DateTimeFormatString		varchar(25) = NULL
+	,@IsEdenred					bit
+	,@TenantId					int
+	,@ProgramCollectionCode		nvarchar(255) = NULL
+	,@IdentityCodeFormatted 	nvarchar(20)	= NULL OUTPUT
+AS
+BEGIN
+    SET NOCOUNT, XACT_ABORT OFF;
+
+	BEGIN TRANSACTION
+    BEGIN TRY
+
+	DECLARE @ProgramId	int
+			, @IdentityCode int
+			, @IdentityCodeStr nvarchar(255)
+			, @AfterRemoveFistCharacter	nvarchar(255)
+	
+	SET @IdentityCodeStr = (SELECT TOP (1) [identity_code] FROM [dbo].[tb_p_program]
+							WHERE identity_code like '%' + CAST(@TenantId AS varchar(2)) + '0____'
+							order by identity_code desc)
+
+	SET @AfterRemoveFistCharacter = (Select right(@IdentityCodeStr, len(@IdentityCodeStr)-1))  
+
+	SET @IdentityCode = CAST(@AfterRemoveFistCharacter AS int) + 1;
+	
+	IF(@IdentityCode IS NULL)
+		SET @IdentityCode = 1
+		
+	SET @IdentityCodeFormatted = CONCAT(@TenantId, FORMAT(@IdentityCode, '00000'))
+
+	-- Insert into Program
+		INSERT INTO [dbo].[tb_p_program]
+				   ([identity_code]
+				   ,[name]
+				   ,[display_name]
+				   ,[timeoffset]
+				   ,[merchant_max_fail_number]
+				   ,[shop_max_fail_number]
+				   ,[terminal_max_fail_number]
+				   ,[is_default_program]
+				   ,[date_format_string]
+				   ,[datetime_format_string]
+				   ,[is_edenred]
+				   ,[tenant_id])
+			 VALUES
+				   (@IdentityCodeFormatted
+				   ,@Name
+				   ,@DisplayName
+				   ,@TimeOffset
+				   ,@MerchantMaxFailNumber
+				   ,@ShopMaxFailNumber
+				   ,@TerminalMaxFailNumber
+				   ,@IsDefaultProgram
+				   ,@DateFormatString
+				   ,@DateTimeFormatString
+				   ,@IsEdenred
+				   ,@TenantId)
+		
+		SET @ProgramId = SCOPE_IDENTITY()
+		
+			-- Insert into ProgramBarcodeSetting
+			IF EXISTS (SELECT 1 FROM @NewBarcodeSettings)
+			BEGIN
+					INSERT INTO [dbo].[tb_pbs_program_barcode_setting]
+				   ([program_id]
+				   ,[barcode_index]
+				   ,[barcode_type]
+				   ,[is_barcode_display_text]
+				   ,[is_barcode_api_enabled])
+					 SELECT
+						@ProgramId
+						,[barcode_index]
+						,[barcode_type]
+						,[is_barcode_display_text]
+						,[is_barcode_api_enabled]
+						FROM @NewBarcodeSettings
+			END
+				
+	-- Insert into Transaction Log
+
+			if(@ProgramCollectionCode is not null)
+			BEGIN
+				INSERT INTO [dbo].[tb_pr_program_route]
+						   ([program_code]
+						   ,[program_collection_code]
+						   ,[tenant_id])
+					 VALUES
+						   (@ProgramId
+						   ,@ProgramCollectionCode
+						   ,@TenantId)
+			END
+	
+	SELECT 
+	[id] "Id"
+   ,[identity_code] "IdentityCode"
+   ,[name]  "Name"
+   ,[display_name] "DisplayName"
+   ,[timeoffset] "TimeOffset"
+   ,[merchant_max_fail_number] "MerchantMaxFailNumber"
+   ,[shop_max_fail_number] "ShopMaxFailNumber"
+   ,[terminal_max_fail_number] "TerminalMaxFailNumber"
+   ,[date_format_string] "DateFormatString"
+   ,[datetime_format_string] "DateTimeFormatString"
+   ,[is_edenred] "IsEdenred"
+	FROM [dbo].[tb_p_program] WHERE [identity_code] = @IdentityCodeFormatted
+	
+	COMMIT TRANSACTION
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+		  SET @IdentityCodeFormatted = NULL
+          ROLLBACK TRANSACTION
+       END;
+
+		THROW
+    END CATCH;
+
+END
+GO
+
+
+/*==============================================================*/
+/* Table: "General Dictionary"                               				*/
+/*==============================================================*/
+IF NOT EXISTS (SELECT 1 FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[tb_gd_general_dictionary]') AND type = N'U')
+BEGIN
+	
+    PRINT 'tb_gd_general_dictionary table creating'
+	
+	CREATE TABLE [dbo].[tb_gd_general_dictionary] (
+		[dictionary_id]          INT            IDENTITY (1, 1) NOT FOR REPLICATION NOT NULL,
+		[tenant_id]          	 INT   			NOT NULL,
+		[category]               NVARCHAR (50)  NOT NULL,
+		[name]           		 NVARCHAR (50)  NOT NULL,
+		[display_name]			 NVARCHAR (500) NOT NULL,
+		[parent_id]				 INT,
+		[created_by]			 NVARCHAR (250) NOT NULL,
+		[created_on]			 DATETIME		NOT NULL,
+		[last_updated_by]		 NVARCHAR (250),
+		[last_updated_on]		 DATETIME
+		CONSTRAINT [PK_general_dictionary_dictionary_id] PRIMARY KEY NONCLUSTERED ([dictionary_id] ASC)
+	);
+
+END
+GO
+
+
+
+-- =============================================
+-- Author:		Rey Gamboa
+-- Create date: 06/21/2022
+-- Description:	Get Dictionary by Id
+-- =============================================
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_dictionary_by_dictionary_id]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_dictionary_by_dictionary_id]
+	@DictionaryId int,
+	@TenantId	int
+AS
+BEGIN
+    SET NOCOUNT ON
+
+		SELECT [dictionary_id] "DictionaryId"
+		  ,[tenant_id] "TenantId"
+		  ,[category] "Category"
+		  ,[name] "Name"
+		  ,[display_name] "DisplayName"
+		  ,[parent_id] "ParentId"
+		  ,[created_by] "CreatedBy"
+		  ,[created_on] "CreatedOn"
+		  ,[last_updated_by] "LastUpdatedBy"
+		  ,[last_updated_on] "LastUpdatedOn"
+	  FROM [dbo].[tb_gd_general_dictionary]
+	  WHERE [dictionary_id] = @DictionaryId AND ([tenant_id] IS NULL OR [tenant_id] = @TenantId)
+END
+GO
+
+-- =============================================
+-- Author:		Rey Gamboa
+-- Create date: 06/21/2022
+-- Description:	Get Dictionary by Category
+-- =============================================
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_dictionary_by_category]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_dictionary_by_category]
+	@Category 	NVARCHAR(50),
+	@TenantId	int
+AS
+BEGIN
+    SET NOCOUNT ON
+
+		SELECT [dictionary_id] "DictionaryId"
+		  ,[tenant_id] "TenantId"
+		  ,[category] "Category"
+		  ,[name] "Name"
+		  ,[display_name] "DisplayName"
+		  ,[parent_id] "ParentId"
+		  ,[created_by] "CreatedBy"
+		  ,[created_on] "CreatedOn"
+		  ,[last_updated_by] "LastUpdatedBy"
+		  ,[last_updated_on] "LastUpdatedOn"
+	  FROM [dbo].[tb_gd_general_dictionary]
+	  WHERE [category] = @Category AND ([tenant_id] IS NULL OR [tenant_id] = @TenantId)
+END
+GO
+
+
+/************************************************* ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Alvin Bernardo
+-- Create date: 
+-- Description:	select tenants
+-- Update 
+--			6/27/2022 - fixed duplicating tenant due taxrate 			
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_tenant_basic_informations]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_tenant_basic_informations]
+	-- Add the parameters for the stored procedure here
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+		SELECT  
+			tbi.tenant_basic_info_id AS TenantBasicInfoId,
+			tbi.[name] AS [Name],
+			_country.country AS Country,
+			tbi.company_tax_type AS CompanyTaxType,
+			tti.company_tax_rate AS CompanyTaxRate
+ 		FROM dbo.tb_tbi_tenant_basic_information tbi 
+		LEFT JOIN dbo.tb_tti_tenant_taxrate_information tti ON tbi.tenant_basic_info_id = tti.tenant_basic_info_id
+		LEFT JOIN dbo.tb_c_countries _country ON tbi.country_code = _country.country_code
+		WHERE tti.is_active = 1 
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+END
+GO
+
+/****** Object:  StoredProcedure [dbo].[sp_sel_tenant_basic_information]    Script Date: 6/27/2022 11:27:44 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author:		Alvin Bernardo
+-- Create date: 
+-- Description:	select tenant by id
+-- Update 
+--			6/27/2022 - fixed not update tenant taxrate 			
+-- =============================================
+DROP PROCEDURE [dbo].[sp_sel_tenant_basic_information]
+GO
+CREATE PROCEDURE [dbo].[sp_sel_tenant_basic_information]
+	@tenant_basic_info_id INT
+AS
+BEGIN
+    SET NOCOUNT ON
+
+		SELECT  
+			tbi.tenant_basic_info_id AS TenantBasicInfoId,
+			tbi.[name] AS [Name],
+			tbi.country_code AS CountryCode,
+			tbi.timezone AS TimeZone,
+			tbi.time_format AS TimeFormat,
+			tbi.currency_symbol AS CurrencySymbol,
+			tbi.company_tax_type AS CompanyTaxType,
+			tbi.logo AS Logo,
+			tbi.preferred_language AS Language,
+			tti.effectivity_date AS EffectivityDate,
+			tti.company_tax_rate AS CompanyTaxRate
+ 		FROM dbo.tb_tbi_tenant_basic_information tbi 
+		LEFT JOIN dbo.tb_tti_tenant_taxrate_information tti ON tbi.tenant_basic_info_id = tti.tenant_basic_info_id  
+		WHERE tbi.tenant_basic_info_id = @tenant_basic_info_id AND tti.is_active = 1
+END
+GO
+/*************************************************************/
+-- =============================================
+-- Author:		Alvin Bernardo
+-- Create date: 10/04/2021
+-- Description:	Update update tenant, change logo from varchar(100) to varchar(max)
+-- Update 
+--			6/27/2022 fixed issue tax rate not updating
+--			6/30/2022 fixed insert of new tax rate even it is not updated			
+-- =============================================
+DROP PROCEDURE IF EXISTS [dbo].[sp_upd_tenant_basic_information] 
+GO
+CREATE PROCEDURE [dbo].[sp_upd_tenant_basic_information] 
+	-- Add the parameters for the stored procedure here
+	@tenant_basic_info_id INT OUTPUT,
+	@name VARCHAR(100),
+	@country_code VARCHAR(5),
+	@timezone VARCHAR(100),
+	@time_format VARCHAR(20),
+	@currency_symbol VARCHAR(5),
+	@company_tax_type BIT,
+	@logo VARCHAR(MAX),
+	@preferred_language VARCHAR(100),
+	@company_tax_rate DECIMAL(18,2),
+	@effectivity_date DATETIME
+AS
+BEGIN
+	-- SET NOCOUNT ON added to prevent extra result sets from
+	-- interfering with SELECT statements.
+	SET NOCOUNT ON;
+
+		SET NOCOUNT, XACT_ABORT ON;
+
+    BEGIN TRY
+
+        BEGIN TRANSACTION;
+        
+
+		    -- Insert statements for procedure here
+    UPDATE dbo.tb_tbi_tenant_basic_information
+	SET
+	[name] = @name,
+	country_code = @country_code,
+	timezone = @timezone,
+	time_format = @time_format,
+	currency_symbol = @currency_symbol,
+	company_tax_type = @company_tax_type,
+	preferred_language = @preferred_language,
+	logo = @logo
+	WHERE tenant_basic_info_id = @tenant_basic_info_id
+
+	--check if the tax rate is changed with effectivity date
+
+	DECLARE @current_effectivity_date datetime
+	DECLARE @current_tax_rate decimal(18,2)
+
+	SELECT TOP 1 @current_tax_rate = company_tax_rate,
+				 @current_effectivity_date = effectivity_date 
+	FROM tb_tti_tenant_taxrate_information
+    WHERE tenant_basic_info_id = @tenant_basic_info_id AND is_active = 1
+
+	IF (@current_tax_rate <> @company_tax_rate) OR 
+	   (@current_effectivity_date <> @effectivity_date) OR
+	   (@current_effectivity_date IS NULL) OR (@current_tax_rate IS NULL)
+		BEGIN
+
+			UPDATE dbo.tb_tti_tenant_taxrate_information 
+			SET 
+			is_active = 0
+			WHERE tenant_basic_info_id = @tenant_basic_info_id
+
+			INSERT INTO dbo.tb_tti_tenant_taxrate_information
+			(
+				tenant_basic_info_id,
+				effectivity_date,
+				company_tax_rate,
+				is_active
+			)
+			VALUES
+			(
+				@tenant_basic_info_id,
+				@effectivity_date,
+				@company_tax_rate,
+				1
+			)			
+		END
+
+        COMMIT TRANSACTION;
+
+    END TRY
+    BEGIN CATCH 
+
+       IF @@TRANCOUNT > 0
+       BEGIN
+          ROLLBACK TRANSACTION
+       END;
+
+	   THROW;
+    END CATCH;
+
+    SET NOCOUNT, XACT_ABORT OFF;
+
+
+
+END
+GO
+
+
+
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_program_by_program_id]
+GO
+
+CREATE PROCEDURE [dbo].[sp_sel_program_by_program_id]
+	@ProgramId int
+	,@TenantId	int
+AS
+BEGIN
+    SET NOCOUNT ON
+
+		SELECT [id] "Id"
+		  ,[identity_code] "IdentityCode"
+		  ,[name] "Name"
+		  ,[display_name] "DisplayName"
+		  ,[timeoffset] "TimeOffset"
+		  ,[merchant_max_fail_number] "MerchantMaxFailNumber"
+		  ,[shop_max_fail_number] "ShopMaxFailNumber"
+		  ,[terminal_max_fail_number] "TerminalMaxFailNumber"
+		  ,[is_default_program] "IsDefaultProgram"
+		  ,[date_format_string] "DateFormatString"
+		  ,[datetime_format_string] "DateTimeFormatString"
+		  ,[is_edenred] "IsEdenred"
+		  ,[active_date_format_string] "ActiveDateFormatString"
+		  ,[tenant_id] "TenantId"
+	  FROM [dbo].[tb_p_program]
+	  WHERE [id] = @ProgramId AND [tenant_id] = @TenantId
+END
+
+
+
+DROP PROCEDURE IF EXISTS [dbo].[sp_sel_program_by_tenant_id]
+GO
+
+CREATE PROCEDURE [dbo].[sp_sel_program_by_tenant_id]
+	@TenantId	int
+AS
+BEGIN
+    SET NOCOUNT ON
+
+		SELECT [id] "Id"
+		  ,[identity_code] "IdentityCode"
+		  ,[name] "Name"
+		  ,[display_name] "DisplayName"
+		  ,[timeoffset] "TimeOffset"
+		  ,[merchant_max_fail_number] "MerchantMaxFailNumber"
+		  ,[shop_max_fail_number] "ShopMaxFailNumber"
+		  ,[terminal_max_fail_number] "TerminalMaxFailNumber"
+		  ,[is_default_program] "IsDefaultProgram"
+		  ,[date_format_string] "DateFormatString"
+		  ,[datetime_format_string] "DateTimeFormatString"
+		  ,[is_edenred] "IsEdenred"
+		  ,[active_date_format_string] "ActiveDateFormatString"
+		  ,[tenant_id] "TenantId"
+	  FROM [dbo].[tb_p_program] with(nolock)
+	  WHERE [tenant_id] = @TenantId
+END
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

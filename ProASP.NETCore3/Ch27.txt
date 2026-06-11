@@ -1,0 +1,71 @@
+http://localhost:5000/controllers/home/list
+
+http://localhost:5000/controllers/form
+
+http://localhost:5000/pages/form
+
+Transforming Form Buttons
+http://localhost:5000/controllers/form
+http://localhost:5000/pages/form
+
+
+
+
+<input class="form-control" asp-for="Product.Name" />
+<input class="form-control" type="text" id="Product_Name" name="Product.Name" >
+
+
+Transforming the input Element type Attribute
+
+[HiddenInput] hidden
+[Text] text
+[Phone] tel
+[Url] url
+[EmailAddress] email
+[DataType(DataType.Password)] password
+[DataType(DataType.Time)] time
+[DataType(DataType.Date)] date
+
+
+
+Formatting input Element Values
+http://localhost:5000/controllers/form/index/5
+
+
+
+Applying Formatting via the Model Class
+http://localhost:5000/controllers/form/index/5
+
+
+
+Displaying Values from Related Data in input Elements
+http://localhost:5000/controllers/form/index/5
+http://localhost:5000/pages/form
+
+
+Working with label Elements
+http://localhost:5000/controllers/form
+
+
+
+
+
+Using the Anti-forgery Feature
+http://localhost:5000/pages/jsform
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

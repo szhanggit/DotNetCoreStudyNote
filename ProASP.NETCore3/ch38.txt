@@ -1,0 +1,33 @@
+38.0.Start
+
+dotnet add package Microsoft.AspNetCore.Identity.EntityFrameworkCore --version 3.1.1
+
+
+dotnet ef migrations add --context IdentityContext Initial
+dotnet ef database update --context IdentityContext
+
+
+
+
+If you need to reset the database, run the dotnet ef database drop --force --context IdentityContext command in the
+Advanced folder and then run the dotnet ef database update --context IdentityContext command. This will delete the
+existing database and create a new—and empty—replacement. Do not use these commands on production systems because
+you will delete user credentials. If you need to reset the main database, then run the dotnet ef database drop --force
+--context DataContext command, followed by dotnet ef database update --context DataContext.
+
+
+
+38.1.CreatingUserManagementTools
+http://localhost:5000/users/list
+
+
+
+http://localhost:5000/users/create
+
+
+
+38.2.CreatingRoleManagementTools
+http://localhost:5000/roles/list
+
+
+

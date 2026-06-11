@@ -1,0 +1,29 @@
+I describe view components in this chapter, which are classes that provide action-style logic to support partial views; this means view
+components provide complex content to be embedded in views while allowing the C# code that supports it to be easily maintained.
+
+http://localhost:5000/cities
+
+
+
+http://localhost:5000/home/index/1
+
+
+kebab-case. each capitalized word in the class name is converted to lowercase and separated by a hyphen so that
+CitySummary becomes city-summary, and the CitySummary view component is applied using the vc:city-summary element.
+
+Applying a View Component
+http://localhost:5000/Home/Index/1
+@await Component.InvokeAsync("CitySummary")
+
+Applying View Components using a Tag Helper
+
+Getting Context Data
+http://localhost:5000/home/index/1 
+http://localhost:5000/data
+
+
+Creating View Components Class
+http://localhost:5000/cities	(Page Model)
+http://localhost:5000/data		(View Component)
+
+http://localhost:5000/cities/index

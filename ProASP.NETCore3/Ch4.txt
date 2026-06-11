@@ -1,0 +1,43 @@
+P53
+
+
+dotnet new globaljson --sdk-version 3.1.101 --output MySolution/MyProject
+dotnet new web --no-https --output MySolution/MyProject --framework netcoreapp3.1
+dotnet new sln -o MySolution
+dotnet sln MySolution add MySolution/MyProject
+
+
+dotnet build
+dotnet run
+
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 3.1.1
+
+
+The project file—which is the file with the .csproj extension—is used to keep track of the packages added to a project. You
+can examine this file by opening it for editing in Visual Studio Code or by right-clicking the project item in the Visual Studio Solution
+Explorer and selecting Edit Project File from the popup menu.
+
+
+Managing Tool Packages----------------------
+dotnet list package													--Listing the Packages in a Project
+dotnet remove package Microsoft.EntityFrameworkCore.SqlServer		--remove package
+dotnet tool uninstall --global dotnet-ef
+dotnet tool install --global dotnet-ef --version 3.1.1
+
+
+Installing the LibMan Tool Package----------------------
+dotnet tool uninstall --global Microsoft.Web.LibraryManager.Cli
+dotnet tool install --global Microsoft.Web.LibraryManager.Cli --version 2.0.96
+
+
+libman init -p cdnjs
+libman install twitter-bootstrap@4.3.1 -d wwwroot/lib/twitter-bootstrap
+
+
+
+ System.Exception: Cannot connect to SQL Server Browser. Ensure SQL Server Browser has been started.
+<add name="d_ev_authorizationContext" connectionString="Data Source=tcp:172.31.211.45,1433;Initial Catalog=TEST_ADORA;Persist Security Info=True;User ID=dev;Password=admin01!;MultipleActiveResultSets=True" providerName="System.Data.SqlClient" />
+
+
+
+

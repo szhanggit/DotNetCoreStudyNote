@@ -1,0 +1,96 @@
+dotnet new globaljson --sdk-version 3.1.101 --output Advanced
+dotnet new web --no-https --output Advanced --framework netcoreapp3.1
+dotnet new sln -o Advanced
+dotnet sln Advanced add Advanced
+
+http://localhost:5000
+
+dotnet add package Microsoft.EntityFrameworkCore.Design --version 3.1.1
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 3.1.1
+
+dotnet tool uninstall --global dotnet-ef
+dotnet tool install --global dotnet-ef --version 3.1.1
+
+
+
+
+Each of the three data model classes defines a key property whose value will be allocated by the database when new objects are
+stored and defines foreign key properties that define the relationships between the classes. These are supplemented by navigation
+properties that will be used with the Entity Framework Core Include method to incorporate related data into queries.
+
+
+
+
+
+
+
+dotnet ef migrations add Initial
+dotnet ef database update
+
+
+If you need to reset the database, then run the 
+
+dotnet ef database drop --force 
+
+command and then the command in
+dotnet ef database update
+
+
+
+
+
+
+libman init -p cdnjs
+libman install twitter-bootstrap@4.3.1 -d wwwroot/lib/twitter-bootstrap
+
+dotnet add package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation --version 3.1.1
+
+
+http://localhost:5000/controllers
+http://localhost:5000/pages
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

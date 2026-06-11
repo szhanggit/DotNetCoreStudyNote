@@ -1,0 +1,150 @@
+35.0.Start
+0. Add Routed.razor
+1. Add _Host.cshtml
+2. Modify Startup.cs
+
+
+
+35.1.AddingRoutesComponents				(Use @page)
+http://localhost:5000/people
+http://localhost:5000/depts
+
+
+
+
+35.2.SettingDefaultComponentRoute
+http://localhost:5000
+
+
+35.3.NavigatingBetweenRoutedComponents
+http://localhost:5000/People
+http://localhost:5000/depts
+
+<NavLink class="btn btn-primary" href="/depts">Departments</NavLink>
+
+
+[Inject]
+public NavigationManager NavManager { get; set; }
+public void HandleClick() => NavManager.NavigateTo("/people");
+
+
+
+
+
+35.4.ReceivingRoutingData
+http://localhost:5000/people
+
+
+35.5.DefiningCommonContentUsingLayouts
+http://localhost:5000/people
+
+ActiveClass This attribute specifies one or more CSS classes that the anchor element rendered by the NavLink component
+will be added to when the current URL matches the href attribute value.
+Match This attribute specifies how the current URL is matched to the href attribute, using a value from the
+NavLinkMatch enum. The values are Prefix, which considers a match if the href matches the start of the URL,
+and All, which requires the entire URL to be the same.
+
+
+35.6.UnderstandingComponentLifecycleMethods
+http://localhost:5000 and http://localhost:5000/departments
+
+35.7.UsingLifecycleMethodsAsynchronousTasks
+http://localhost:5000
+
+    protected async override Task OnParametersSetAsync()
+    {
+        await Task.Delay(1000);
+        Person = await Context.People.FirstOrDefaultAsync(p => p.PersonId == Id) ?? new Person();
+    }
+
+
+
+---------------------------------------------------------------------------------------------------------------
+35.8.UsingReferencesChildComponents					(Pass request to child components)
+http://localhost:5000
+
+References to components are created by adding an @ref attribute
+As each MultiNavLink component is created, it is added to the Refs dictionary.
+
+
+
+
+35.9.InteractingComponentsFromOtherCode
+InvokeAsync(func) This method is used to execute a function inside the Blazor environment.
+StateHasChanged() This method is called when a change occurs outside of the normal lifecycle, as shown in the next section.
+
+
+The StateHasChanged method is invoked when all the changes have been applied, triggering a Blazor update and ensuring
+changes are reflected in the component’s output.
+
+http://localhost:5000
+http://localhost:5000/controllers/home/toggle
+
+
+Methods of a blazor component can be called outside.
+controller calls a singleton service. The singleton service calls the blazor component.
+
+
+Injection-----
+In blazor:
+    [Inject]
+    public ToggleService Toggler { get; set; }
+
+In controller:
+	public HomeController(DataContext dbContext, ToggleService ts)
+	{
+		context = dbContext;
+		toggleService = ts;
+	}
+
+
+
+
+
+
+35.10.InvokingJavaScriptFunctionFromComponent			(On server side invoke js function)
+http://localhost:5000/person/1
+
+    public async Task HandleClick()
+    {
+        await JSRuntime.InvokeVoidAsync("addTableRows", 2);
+    }
+
+
+
+InvokeAsync<T>(name, args) This method invokes the specified function with the arguments provided. The result type is
+specified by the generic type parameter.
+InvokeVoidAsync(name, args) This method invokes a function that doesn’t produce a result.
+
+
+
+35.11.RetainingReferencesHTMLElements				(Pass element reference to js function)
+http://localhost:5000/person/1
+
+
+
+
+35.12.InvokingComponentMethodFromJavaScript			(Call components' methods from js)
+http://localhost:5000
+
+button.onclick = () => DotNet.invokeMethodAsync("Advanced", "ToggleEnabled");
+The arguments are the name of the assembly and the name of the
+static method. (The name of the component is not required.)
+
+
+
+35.13.InvokingInstanceMethodFromJavaScriptFunction
+http://localhost:5000
+
+
+
+
+
+
+
+
+
+
+
+
+

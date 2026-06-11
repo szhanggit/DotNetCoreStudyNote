@@ -1,0 +1,86 @@
+takes a different approach. A JavaScript library is included in the HTML document that is sent to the browser. When the
+JavaScript code is executed, it opens an HTTP connection back to the server and leaves it open, ready for user interaction. When the
+user picks a value using the select element, for example, details of the selection are sent to the server, which responds with just the
+changes to apply to the existing HTML, as
+
+Startup:
+services.AddServerSideBlazor();
+endpoints.MapBlazorHub();
+
+_Imports.razor
+http://localhost:5001/controllers
+http://localhost:30324/pages/blazor
+
+
+
+    <input class="form-control my-1" @bind="Time" @bind:culture="Culture" @bind:format="MMM-dd" />
+    <input class="form-control my-1" @bind="Time" @bind:culture="Culture" />
+    <input class="form-control" type="date" @bind="Time" />
+	
+	
+	
+	
+33.1.BlazorEventsAndDataBindings			(wire events and data)
+http://localhost:5000/pages/blazor	
+	
+	
+33.2.HandlingEventsFromMultipleElements		(wire multiple events and data, use a queue)
+http://localhost:5000/pages/blazor
+
+
+33.3.GeneratingElements						(Generate elements in a loop)
+http://localhost:5000/pages/blazor
+
+
+33.4.ProcessingEventsWithoutHandlerMethod	(use lamda expression)
+http://localhost:5000/pages/blazor
+
+
+33.5.PreventingDefaultEventsAndEventPropagation
+http://localhost:5000/pages/blazor
+
+
+33.6.WorkingWithDataBindings				(Data Binding)
+http://localhost:5000/pages/blazor
+
+33.7.ChangingBindingEvent					(Event Binding)
+http://localhost:5000/pages/blazor
+
+
+33.8.CreatingDateTimeBindings
+http://localhost:5000/pages/blazor
+
+
+33.9.CodeBehindClass
+http://localhost:5000/pages/blazor
+
+
+
+
+33.10.DefiningRazorComponentClass
+http://localhost:5000/pages/blazor
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

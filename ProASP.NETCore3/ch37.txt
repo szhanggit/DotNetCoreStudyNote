@@ -1,0 +1,32 @@
+37.0.Start
+http://localhost:5000/api/people
+
+
+
+Open powershell and point to Advanced.csproj
+dotnet new classlib -o ../DataModel -f netstandard2.1
+dotnet add ../DataModel package System.ComponentModel.Annotations --version 4.7.0
+Move-Item -Path @("Models/Person.cs", "Models/Location.cs", "Models/Department.cs") ../DataModel
+
+dotnet new -i Microsoft.AspNetCore.Blazor.Templates::3.1.0-preview4.19579.2
+
+dotnet new blazorwasm -o ../BlazorWebAssembly
+dotnet add ../BlazorWebAssembly reference ../DataModel
+
+
+dotnet add reference ../DataModel ../BlazorWebAssembly
+dotnet add package Microsoft.AspNetCore.Blazor.Server --version 3.1.0-preview4.19579.2
+
+dotnet sln add ../DataModel ../BlazorWebAssembly
+
+Run:
+http://localhost:5000/webassembly
+
+
+http://localhost:5000/webassembly/forms
+
+
+37.3.CompletingBlazorWebAssemblyFormApplication
+http://localhost:5000/webassembly/forms
+
+

@@ -1,0 +1,99 @@
+36.0.Start
+http://localhost:5000/forms
+@layout EmptyLayout
+
+
+
+36.1.UsingBlazorFormComponents
+http://localhost:5000/forms/edit/2
+
+
+
+36.2.CreatingCustomFormComponents
+http://localhost:5000/forms/edit/2
+The base class for form components is InputBase<TValue>.
+The base class takes care of most of the work and provides the CurrentValueAsString property, which is
+used to provide the current value in event handlers when the user selects a new value.
+
+
+36.3.ValidatingFormData
+http://localhost:5000/forms/edit/2
+
+
+
+36.4.HandlingFormEvents
+http://localhost:5000/forms/edit/2
+
+
+
+
+
+36.5.UnderstandingEntityFrameworkCoreContextScopeIssue
+http://localhost:5000/forms/edit/2
+
+In a Blazor application, the routing system responds to URL changes without sending new HTTP requests, which means that
+multiple components are displayed using only the persistent HTTP connection that Blazor maintains to the server. This results in a
+single dependency injection scope being shared by multiple components, as shown in Figure 36-7, and the changes made by one
+component will affect other components even if the changes are not written to the database.
+
+Therefore we need to manually discarding Unsaved Data Changes.
+
+
+
+
+36.6.DiscardingUnsavedDataChanges
+http://localhost:5000/forms/edit/2
+
+@implements IDisposable
+public void Dispose() => Context.Entry(PersonData).State = EntityState.Detached;
+
+
+
+36.7.CreatingNewDependencyInjectionScopes
+http://localhost:5000/forms/edit/2
+
+@inherits OwningComponentBase
+@using Microsoft.Extensions.DependencyInjection
+DataContext Context => ScopedServices.GetService<DataContext>();
+
+36.7.1.CreatingNewDependencyInjectionScopes
+@inherits OwningComponentBase<DataContext>
+DataContext Context => Service;
+
+
+
+36.8.UnderstandingRepeatedQueryIssue			(EF Core will always query database more than needed.)
+
+
+
+http://localhost:5000/forms
+
+36.9.ManagingQueriesInComponent
+http://localhost:5000/forms
+
+People = Context.People.Include(p => p.Department).Include(p => p.Location);	//Will be query database more than needed.
+People = await Context.People.Include(p => p.Department).Include(p => p.Location).ToListAsync<Person>();	//query database just needed.
+
+The UpdateData method performs the same query but applies the ToListAsync method, which forces evaluation of the Entity
+Framework Core query.
+
+
+36.10.CreatingListComponent
+http://localhost:5000/forms
+
+
+
+
+36.11.CreatingCustomValidationConstraint
+http://localhost:5000/forms/edit/2
+
+
+
+
+
+
+36.12.CreatingValidOnlySubmitButtonComponent
+http://localhost:5000/forms/create
+
+
+

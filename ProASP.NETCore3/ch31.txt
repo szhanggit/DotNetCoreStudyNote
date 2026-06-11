@@ -1,0 +1,10 @@
+Entity Framework Core configures the database so that primary keys are allocated by the database server when new data is
+stored. If you attempt to store an object and provide a ProductId value other than zero, then an exception will be thrown.
+I reset the Category and Supplier properties to prevent Entity Framework Core from trying to deal with related data when
+storing an object.
+
+
+
+
+
+http://localhost:5000/pages

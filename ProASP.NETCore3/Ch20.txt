@@ -1,0 +1,54 @@
+http://localhost:5000/api/suppliers/1
+
+The Include method tells Entity Framework Core to follow a relationship in the database and load the related data.
+
+
+The solution is to use a PATCH request, which sends just the changes to the web service rather than a complete replacement object.
+
+
+
+
+
+dotnet add package Microsoft.AspNetCore.Mvc.NewtonsoftJson --version 3.1.1
+http://localhost:5000/api/suppliers/1
+[{"op":"replace","path":"City","value":"Los Angeles"}]
+
+
+http://localhost:5000/api/content/string
+http://localhost:5000/api/content/object
+
+
+
+
+Requesting a Format in the URL
+http://localhost:5000/api/content/object/json
+http://localhost:5000/api/content/object/xml
+
+
+Restricting the Formats Received by an Action Method
+http://localhost:5000/api/content
+
+
+-ContentType "application/json"
+{ "Name":"Swimming Goggles", "Price":12.75, "CategoryId":1, "SupplierId":1}
+
+
+-ContentType "application/xml"
+<ProductBindingTarget><Name>Kayak</Name><Price>275.00</Price><CategoryId>1</CategoryId><SupplierId>1</SupplierId></ProductBindingTarget>
+
+
+
+
+Installing and Configuring the Swashbuckle Package
+dotnet add package Swashbuckle.AspNetCore --version 5.0.0-rc2
+http://localhost:5000/swagger/v1/swagger.json
+http://localhost:5000/swagger/index.html
+
+
+
+Running the API Analyzer
+<PropertyGroup>
+<IncludeOpenAPIAnalyzers>true</IncludeOpenAPIAnalyzers>
+</PropertyGroup>
+
+

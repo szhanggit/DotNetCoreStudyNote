@@ -1,0 +1,63 @@
+dotnet add package Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation --version 3.1.1
+
+
+http://localhost:5000/api/products
+
+If you need to define a method in a controller that is not an action, you can make it private or,
+if that is not possible, decorate the method with the NonAction attribute.
+
+http://localhost:5000/home/index/4
+http://localhost:5000/home/common
+http://localhost:5000/second
+
+You can specify a set of namespaces that should be searched for types by adding a view imports file to the project. The view
+imports file is placed in the Views folder and is named _ViewImports.cshtml.			(Razor View Imports)
+
+
+
+
+@page This directive denotes a Razor Page, described in Chapter 23.
+@addTagHelper This directive adds tag helpers to a view, as described in Chapter 25.
+@functions This directive adds C# properties and methods to the C# class generated from a view and is commonly used
+in Razor Pages, as described in Chapter 23.
+@attribute This directive adds an attribute to the C# class generated from a view. I use this feature to apply authorization
+restrictions in Chapter 38.
+@implements This directive declares that the C# class generated from a view inherits an interface or is derived from a base
+class. This feature is demonstrated in Chapter 33.
+@inherits This directive sets the base class for the C# class generated from a view. This feature is demonstrated in
+Chapter 33.
+@inject This directive provides a view with direct access to a service through dependency injection. This feature is
+demonstrated in Chapter 23.
+
+
+
+<table class="table table-sm table-striped table-bordered" data-id="@Model.ProductId">
+Data attributes, which are attributes whose names are prefixed by data-, have been an informal way of creating custom
+attributes for many years and have been made part of the formal standard as part of HTML5. They are most often applied so that
+JavaScript code can locate specific elements or so that CSS styles can be more narrowly applied.
+
+
+@:Small Boat
+The Razor compiler needs help with literal values that are not enclosed in HTML elements, requiring the @: prefix, like this:
+
+
+
+http://localhost:5000/home/list
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

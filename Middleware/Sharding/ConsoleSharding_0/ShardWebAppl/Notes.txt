@@ -1,0 +1,53 @@
+﻿1. Creating Child Shard database.  (Manully create all of the empty databases.)
+IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'txc_local_tenant_gl')
+BEGIN
+  CREATE DATABASE txc_local_tenant_gl;
+  PRINT N'Created txc_local_tenant_gl'
+END;
+GO
+
+https://learn.microsoft.com/en-us/azure/azure-sql/database/elastic-scale-add-a-shard?view=azuresql
+D:\Study\.NetCore\Middleware\Sharding\ConsoleSharding_0\Services\Command\Shard\CreateShardCommandHandler.cs
+	i.	Check ListShardMap<int> shardMap;
+	ii.	If there is no list, create one: shardMap = _smHelper.CreateListShardMap<int>(_shardConfig.ShardMapName);
+	iii.Get specific Shard by server name and database name.		if (!shardMap.TryGetShard(new ShardLocation(shardServer, request.DbName), out shard))
+	iv. If there is no such shard, create one:						shard = shardMap.CreateShard(new ShardLocation(shardServer, request.DbName));
+Create these tables.
+select * from [__ShardManagement].[ShardMapManagerLocal]
+select * from [__ShardManagement].[ShardMappingsLocal]
+select * from [__ShardManagement].[ShardMapsLocal]
+select * from [__ShardManagement].[ShardsLocal]	
+	
+	v.	Create mapping:												shardMap.CreatePointMapping(new PointMappingCreationInfo<int>(request.Key, shard, MappingStatus.Online));
+																	select * from [__ShardManagement].[ShardMappingsLocal] with(nolock)
+
+
+ShardMapManagerFactory.CreateSqlShardMapManager(connectionString); Create tables below:
+select * from [__ShardManagement].[OperationsLogGlobal]
+select * from [__ShardManagement].[ShardedDatabaseSchemaInfosGlobal]
+select * from [__ShardManagement].[ShardMapManagerGlobal]
+select * from [__ShardManagement].[ShardMappingsGlobal]
+select * from [__ShardManagement].[ShardMapsGlobal]
+select * from [__ShardManagement].[ShardsGlobal]
+
+
+
+
+
+Get Connection String
+D:\Study\.NetCore\Middleware\Sharding\ConsoleSharding_0\TXC.Common.Data\TenantDbConnection\TenantDbConnection.cs
+	i. Get ShardMapManager object
+	        ShardMapManager smm = ShardMapManagerFactory.GetSqlShardMapManager(_config.GlobalShardMapConnectionString, ShardMapManagerLoadPolicy.Lazy);
+	ii.Get ListShardMap<int>
+            ListShardMap<int> tenantShardMap = smm.GetListShardMap<int>(_config.ShardMapName);
+	iii. Get database Connection
+			OpenConnectionForKeyAsync(tenantId, credentialConnString, ConnectionOptions.Validate);
+
+
+----------------------------------------------------------------------------------------------------------
+
+
+Extensive Reading:
+https://learn.microsoft.com/en-us/azure/azure-sql/database/elastic-scale-introduction?view=azuresql
+https://learn.microsoft.com/en-us/azure/azure-sql/database/elastic-scale-get-started?view=azuresql	(There is an example inside)
+https://learn.microsoft.com/en-us/azure/azure-sql/database/elastic-scale-shard-map-management?view=azuresql

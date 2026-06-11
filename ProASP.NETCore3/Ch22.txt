@@ -1,0 +1,51 @@
+ViewBag:
+The problem with the view bag is that the compiler cannot check the use of
+the properties on dynamic objects, much like views that don’t use an @model expression. It can be difficult to judge when a new
+view model class should be used, and my rule of thumb is to create a new view model class when the same view model property
+is used by multiple actions or when an action method adds more than two or three properties to the view bag.
+It is like a javascript object.
+
+The value from view bag goes from controller to view to master layout.
+
+
+TempData:
+The temp data feature allows a controller to preserve data from one request to another, which is useful when performing
+redirections.
+Can only store string type data.
+It is a dictionary.
+
+http://localhost:5000/cubed
+http://localhost:5000/second
+
+
+
+If you need to use a different layout for all the actions of a single controller, then add a view start file to the Views/
+[controller] folder that selects the view you require. The Razor engine will use the layout specified by the controller-specific view
+start file.
+
+
+Layout = null;	//If does not need a layout.
+
+Enabling Partial Views
+_ViewImports.cshtml
+@using WebApp.Models
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+
+http://localhost:5000/Home/List
+
+<partial name="_CellPartial" for="Name" />		It is like @Model.Name
+
+
+
+Encoding
+
+http://localhost:5000/home/html
+
+
+
+
+
+
+
+
+

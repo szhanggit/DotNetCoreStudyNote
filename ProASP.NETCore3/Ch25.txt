@@ -1,0 +1,13 @@
+http://localhost:5000/Home
+http://localhost:5000/Cities
+
+The TagHelperContext Properties
+AllAttributes 	This property returns a read-only dictionary of the attributes applied to the element being transformed, indexed by name and by index.
+Items 			This property returns a dictionary that is used to coordinate between tag helpers, as described in the “Coordinating Between Tag Helpers” section.
+UniqueId 		This property returns a unique identifier for the element being transformed.
+
+Advanced Tags
+http://localhost:5000/Home/Index/1
+http://localhost:5000/editor/1
+
+http://localhost:5000/Home/Index/5

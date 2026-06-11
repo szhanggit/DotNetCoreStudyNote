@@ -1,0 +1,53 @@
+Regenerating the Development Certificates:
+dotnet dev-certs https --clean
+dotnet dev-certs https --trust
+
+http://localhost:5000
+https://localhost:44350
+http://localhost:5000/pages/message
+https://localhost:44350/pages/message
+http://localhost:5000/Home/Index
+https://localhost:44350/Home/Index
+
+Resource filters are usually used where it is possible to short-circuit the pipeline and provide a response early, such as when implementing data caching.
+Resource filters can only be used in controllers.
+https://localhost:44350/pages/message
+
+
+Action Filter:
+https://localhost:44350/home/messages?message1=hello&message2=world
+
+Page Filter:
+https://localhost:44350/pages/message?message1=hello&message2=world
+
+
+Result Filter:
+Filters that implement the IResultFilter and IAsyncResultFilter interfaces are used only when a request is handled
+normally by the endpoint. They are not used if another filter short-circuits the pipeline or if there is an exception. Filters that
+need to inspect or alter the response, even when the pipeline is short-circuited, can implement the IAlwaysRunResultFilter or
+IAsyncAlwaysRunResultFilter interface. These interfaces derived from IResultFilter and IAsyncResultFilter but define no
+new features. Instead, ASP.NET Core detects the always-run interfaces and always applies the filters.
+
+https://localhost:44350/?diag
+
+
+Exception Filter
+https://localhost:44350/Home/GenerateException/100
+
+
+Managing the Filter Lifecycle
+https://localhost:44350/?diag
+
+
+Creating Filter Factories
+Preventing filter reuse
+
+
+Filter Orders:
+By default, ASP.NET Core runs global filters, then filters applied to controllers or page model classes, and finally filters applied to action or handler methods.
+
+
+Order values can be negative, which is a helpful way of ensuring that a filter is applied before any global filters with the
+default order (although you can also set the order when creating global filters, too).
+
+

@@ -1,0 +1,62 @@
+cd D:\Study\.NetCore\ProASP.NETCore3\pro-asp.net-core-3-master\07.0.Start
+dotnet new globaljson --sdk-version 3.1.101 --output SportsSln/SportsStore			(global.json)
+dotnet new web --no-https --output SportsSln/SportsStore --framework netcoreapp3.1	(It is the template of ASP.NET Core Empty)
+dotnet new sln -o SportsSln															(Solution File SportsSln.sln)
+dotnet sln SportsSln add SportsSln/SportsStore										(Add SportsStore\SportsStore.csproj into SportsSln.sln)
+
+Creating the unit test project:
+dotnet new xunit -o SportsSln/SportsStore.Tests --framework netcoreapp3.1
+dotnet sln SportsSln add SportsSln/SportsStore.Tests
+dotnet add SportsSln/SportsStore.Tests reference SportsSln/SportsStore
+dotnet add SportsSln/SportsStore.Tests package Moq --version 4.13.1
+
+It is about entity framework:
+dotnet add package Microsoft.EntityFrameworkCore.Design --version 3.1.1
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 3.1.1
+dotnet tool uninstall --global dotnet-ef
+dotnet tool install --global dotnet-ef --version 3.1.1
+
+
+Without the IQueryable<T> interface, I would have to retrieve all of the
+Product objects from the database and then discard the ones that I don’t want, which becomes an expensive operation as the
+amount of data used by an application increases. It is for this reason that the IQueryable<T> interface is typically used instead
+of IEnumerable<T> in database repository interfaces and classes.
+
+
+
+Creating the Database Migration:
+cd D:\Study\.NetCore\ProASP.NETCore3\pro-asp.net-core-3-master\07.0.Start\SportsSln\SportsStore
+dotnet ef migrations add Initial		(This will generate D:\Study\.NetCore\ProASP.NETCore3\pro-asp.net-core-3-master\07.0.Start\SportsSln\SportsStore\Migrations)
+
+
+
+Just in case need to reset database:
+dotnet ef database drop --force --context StoreDbContext
+
+
+
+Installing the Bootstrap Package:
+dotnet tool uninstall --global Microsoft.Web.LibraryManager.Cli
+dotnet tool install --global Microsoft.Web.LibraryManager.Cli --version 2.0.96
+libman init -p cdnjs
+libman install twitter-bootstrap@4.3.1 -d wwwroot/lib/twitter-bootstrap
+
+
+
+
+ex:
+Build a middleware to initialize database.
+SeedData.EnsurePopulated(app);	//It is in Startup.Configure
+Get service from app:
+StoreDbContext context = app.ApplicationServices.CreateScope().ServiceProvider.GetRequiredService<StoreDbContext>();
+
+
+TagHelper
+PartialView
+
+
+
+
+
+
+

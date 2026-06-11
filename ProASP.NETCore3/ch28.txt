@@ -1,0 +1,71 @@
+http://localhost:5000/controllers/form/index/5
+
+The default model binders look for data values in these four places:
+• Form data
+• The request body (only for controllers decorated with ApiController)
+• Routing segment variables
+• Query strings
+
+http://localhost:5000/controllers/Form/Index/5?id=1
+In this case, system will get 5, for Routing segment variables is before Query strings.
+
+http://localhost:5000/pages/form
+
+            //return View("Form", await context.Products.Include(p => p.Category).Include(p => p.Supplier).FirstAsync(p => p.ProductId == id));
+            return View("Form", await context.Products.Include(p => p.Category).Include(p => p.Supplier).FirstOrDefaultAsync(p => p.ProductId == id));	//Will always return default value.
+
+			
+Decorate properties with the
+BindNever attribute to exclude them from model binding.
+
+
+
+
+Selectively Binding Properties to avoid over-binding attack.
+
+
+Arrays:
+http://localhost:5000/pages/bindings
+
+Specifying a Model Binding Source:
+
+FromForm This attribute is used to select form data as the source of binding data. The name of the parameter is used to locate
+a form value by default, but this can be changed using the Name property, which allows a different name to be
+specified.
+FromRoute This attribute is used to select the routing system as the source of binding data. The name of the parameter is used
+to locate a route data value by default, but this can be changed using the Name property, which allows a different
+name to be specified.
+FromQuery This attribute is used to select the query string as the source of binding data. The name of the parameter is used
+to locate a query string value by default, but this can be changed using the Name property, which allows a different
+query string key to be specified.
+FromHeader This attribute is used to select a request header as the source of binding data. The name of the parameter is used
+as the header name by default, but this can be changed using the Name property, which allows a different header
+name to be specified.
+FromBody This attribute is used to specify that the request body should be used as the source of binding data, which is
+required when you want to receive data from requests that are not form-encoded, such as in API controllers that
+provide web services.
+
+
+
+http://localhost:5000/controllers/Form/Index/5?id=1
+http://localhost:5000/pages/bindings?data[0].name=Skis&data[0].price=500
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

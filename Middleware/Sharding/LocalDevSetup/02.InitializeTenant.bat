@@ -1,0 +1,1 @@
+"%~dp0"\flyway-commandline-8.5.1-windows-x64\flyway-8.5.1\flyway -url=jdbc:sqlserver://localhost:1433;databaseName=txc_local_tenant -user=leansql -password=Edenred2021! -locations="filesystem:C:\TXC\txc-back-service-tenant\02.Development\01.Database\Migrations\Common" migrate

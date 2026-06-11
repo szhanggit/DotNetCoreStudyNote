@@ -1,0 +1,156 @@
+39.0.Start
+http://localhost:5000/home/index
+http://localhost:5000/users/list
+http://localhost:5000/roles/list
+
+http://localhost:5000/account/login
+http://localhost:5000/account/details
+http://localhost:5000/account/logout
+
+
+
+39.1.AuthorizingAccessEndpoints
+http://localhost:5000/account/logout
+http://localhost:5000/users/list
+http://localhost:5000/account/login
+http://localhost:5000/users/list
+
+
+
+The /Account/Login and /Account/AccessDenied URLs are the defaults used by ASP.NET Core authorization files.
+
+
+39.2.AuthorizingAccessBlazorApplications
+http://localhost:5000/account/logout
+http://localhost:5000
+
+admin
+secret
+
+
+
+39.3.PerformingAuthorizationBlazorComponents
+http://localhost:5000/account/logout
+http://localhost:5000
+
+
+
+39.4.DisplayingContentAuthorizedUsers
+http://localhost:5000/depts
+
+
+
+39.5.BuildingSimpleJavaScriptClient
+http://localhost:5000/webclient.html
+
+
+Show error code instead of redirecting
+            services.AddAuthentication(opts =>
+            {
+                opts.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                opts.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            }).AddCookie(opts =>
+            {
+                opts.Events.DisableRedirectForPath(e => e.OnRedirectToLogin, "/api", StatusCodes.Status401Unauthorized);
+                opts.Events.DisableRedirectForPath(e => e.OnRedirectToAccessDenied, "/api", StatusCodes.Status403Forbidden);
+            });
+
+
+
+39.6.RestrictingAccessWebService
+http://localhost:5000/account/logout
+http://localhost:5000/webclient.html
+
+
+
+
+39.7.UsingCookieAuthentication
+http://localhost:5000/webclient.html
+
+
+39.8.UsingBearerTokenAuthentication
+http://localhost:5000/webclient.html
+dotnet add package System.IdentityModel.Tokens.Jwt --version 5.6.0
+dotnet add package Microsoft.AspNetCore.Authentication.JwtBearer --version 3.1.1
+
+
+
+Not all web services will be able to rely on cookies because not all clients can use then. An alternative is to use a bearer token, which
+is a string that clients are given and is included in the requests they send to the web service. Clients don’t understand the meaning of
+the token—which is said to be opaque—and just use whatever token the server provides.
+
+
+
+
+39.9.AuthenticatingTokens
+http://localhost:5555/Account/Logout
+http://localhost:5555/webclient.html
+
+
+bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InN0ZXZlbiIsIm5iZiI6MTY0MDA0MzczMywiZXhwIjoxNjQwMTMwMTMzLCJpYXQiOjE2NDAwNDM3MzN9.bMxx_5xUlCy0BL0XTbnF8j206lx96UzQWmHYcCHwL7c
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

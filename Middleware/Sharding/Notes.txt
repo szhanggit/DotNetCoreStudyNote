@@ -1,0 +1,30 @@
+https://www.sqlservercentral.com/blogs/azure-sql-database-elastic-scale-part-1-what-is-sharding
+One major thing that has been missing up to this point is the ability to spread data easily across multiple databases, which is known as Sharding.		
+		
+With Sharding, records are grouped by a particular key, known as a Sharding Key. All of the records that are associated with a particular Sharding Key are known as a Shardlet.
+		 
+The different databases that store the collections of Shardlets are known as Partitions.	 
+		 
+		 
+A Shard Map gives the application the ability to look up a particular Sharding Key and find out on which Partition the Shardlet resides. 		 
+		 
+		 
+There are two types of Shard Maps that are supported by Azure SQL Database Elastic Scale: List and Range Sharding. 		 
+In List Sharding, each Sharding Keys is uniquely associated with a particular Shardlet.		 
+In Range Sharding, a range of Sharding Keys are associated with a particular Partition that contains the appropriate Shardlets.		 
+
+
+
+
+
+
+
+
+
+https://docs.microsoft.com/en-us/azure/azure-sql/database/elastic-scale-introduction?view=azuresql
+https://docs.microsoft.com/en-us/azure/azure-sql/database/elastic-scale-add-a-shard?view=azuresql   
+https://docs.microsoft.com/en-us/azure/azure-sql/database/elastic-scale-add-a-shard?view=azuresql   
+https://edenred.atlassian.net/wiki/spaces/TXCLOUD/pages/12970721346/01.+Setup+Tenant   
+https://www.softwaretestinghelp.com/microsoft-azure-sql-database-tutorial/   
+https://docs.azure.cn/en-us/dotnet/api/microsoft.azure.sqldatabase.elasticscale.shardmanagement.shardmapmanagerfactory.createperformancecategoryandcounters?view=azure-dotnet&viewFallbackFrom=azure-dotnet-legacy   
+https://www.csharpcodi.com/csharp-examples/Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement.ShardMapManagerFactory.TryGetSqlShardMapManager(string,%20Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement.ShardMapManagerLoadPolicy,%20Microsoft.Azure.SqlDatabase.ElasticScale.RetryBehavior,%20out%20Microsoft.Azure.SqlDatabase.ElasticScale.ShardManagement.ShardMapManager)/   
