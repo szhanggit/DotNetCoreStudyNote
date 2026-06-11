@@ -1,0 +1,18 @@
+{
+  "leave_on_terminate": false,
+  "skip_leave_on_interrupt": false,
+  "service": {
+    "name": "product-api",
+    "tags": [ "product" ],
+    "port": 80,
+    "check": {
+      "id": "product-api_up",
+      "name": "Fetch health check from local nginx",
+      "http": "http://localhost/HealthCheck",
+      "interval": "5s",
+      "timeout": "1s",
+      "deregister_critical_service_after": "30s"
+    }
+  },
+  "data_dir": "/consul/data"
+}

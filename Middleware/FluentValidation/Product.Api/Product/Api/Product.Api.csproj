@@ -1,0 +1,59 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>0a0f7ca3-3705-4193-8d29-1f37be07ce1c</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Authentication\**" />
+    <Compile Remove="auxilliary\consul\data\**" />
+    <Compile Remove="Constants\**" />
+    <Content Remove="Authentication\**" />
+    <Content Remove="auxilliary\consul\data\**" />
+    <Content Remove="Constants\**" />
+    <EmbeddedResource Remove="Authentication\**" />
+    <EmbeddedResource Remove="auxilliary\consul\data\**" />
+    <EmbeddedResource Remove="Constants\**" />
+    <None Remove="Authentication\**" />
+    <None Remove="auxilliary\consul\data\**" />
+    <None Remove="Constants\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Controllers\ApiBaseController.cs" />
+    <Compile Remove="Controllers\CacheController.cs" />
+    <Compile Remove="Controllers\HealthCheckController.cs" />
+    <Compile Remove="Controllers\WeatherForecast.cs" />
+    <Compile Remove="Controllers\WeatherForecastController.cs" />
+    <Compile Remove="Extensions\ApplicationInsightsExtension.cs" />
+    <Compile Remove="Extensions\AzureStorageExtension.cs" />
+    <Compile Remove="Extensions\CachedExtension.cs" />
+    <Compile Remove="Extensions\ConfigurationServicesExtension.cs" />
+    <Compile Remove="Extensions\ConfigureFilters.cs" />
+    <Compile Remove="Extensions\DataOperationExtension.cs" />
+    <Compile Remove="Extensions\DirectoryConfigExtension.cs" />
+    <Compile Remove="Extensions\FilterExtension.cs" />
+    <Compile Remove="Extensions\HttpServiceExtension.cs" />
+    <Compile Remove="Extensions\KeyVaultExtension.cs" />
+    <Compile Remove="Extensions\PipeExtension.cs" />
+    <Compile Remove="Extensions\ServiceBusExtension.cs" />
+    <Compile Remove="Extensions\SwaggerExtension.cs" />
+    <Compile Remove="TelemetryInitializer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.45.0" />
+	<PackageReference Include="Calzolari.Grpc.AspNetCore.Validation" Version="5.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Proto\TXC.Proto.Product.csproj" />
+    <ProjectReference Include="..\Services\Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+  </ItemGroup>
+
+</Project>
