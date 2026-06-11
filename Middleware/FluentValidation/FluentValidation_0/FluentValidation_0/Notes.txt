@@ -1,0 +1,6 @@
+﻿https://www.c-sharpcorner.com/article/using-fluentvalidation-in-asp-net-core/
+
+Install-Package FluentValidation
+Install-Package FluentValidation.AspNetCore
+Install-Package FluentValidation.ValidatorAttribute
+Install-Package Swashbuckle.AspNetCore
