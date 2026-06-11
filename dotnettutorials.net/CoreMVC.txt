@@ -1,0 +1,240 @@
+Introduction to ASP.NET Core MVC Framework
+
+http://localhost:50192/Student/Details/2
+
+
+
+-----------------------------------------------------------------------------
+AddController vs AddMvc vs AddControllersWithViews vs AddRazorPages
+
+If you want to create a Web API application where there are no views, then you need to use AddControllers() extension method.
+If you want to work with the Razor Page application, then you need to use the AddRazorPages() extension method into your ConfigureService method of Startup class.
+If you want to develop a Model View Controller i.e. MVC application then you need to use AddControllersWithViews() method. Further, if you want Pages features into your MVC application, then you need to use the AddMVC method.
+
+
+-----------------------------------------------------------------------------
+Models in ASP.NET Core MVC
+
+http://localhost:51176/Home/GetStudentDetails/103
+
+-----------------------------------------------------------------------------
+ASP.NET Core Dependency Injection
+
+http://localhost:51329/Home/Index
+http://localhost:51329/Home/GetStudentDetails/101
+
+There are two types of services in ASP.NET Core. They are as follows:
+
+Framework Services: Services that are a part of the ASP.NET Core framework such as IApplicationBuilder, IHostingEnvironment, ILoggerFactory, etc.
+Application Services: The services (custom types or classes) which you as a programmer create for your application.
+
+Singleton: In this case, the IoC container will create and share a single instance of a service object throughout the application’s lifetime.
+Transient: In this case, the IoC container will create a new instance of the specified service type every time you ask for it.
+Scoped: In this case, the IoC container will create an instance of the specified service type once per request and will be shared in a single request.
+
+In real-time applications, you need to register the components such as application-wide configuration as Singleton. 
+The Database access classes like Entity Framework contexts are recommended to be registered as Scoped so that the connection can be re-used. 
+If you want to run anything in parallel then it is better to register the component as Transient.
+
+
+public void ConfigureServices(IServiceCollection services)
+{
+    //Adding MVC Service. Framework Service
+    services.AddControllersWithViews();
+    //Application Service
+    services.Add(new ServiceDescriptor(typeof(IStudentRepository), new TestStudentRepository())); // by default singleton
+    services.Add(new ServiceDescriptor(typeof(IStudentRepository), typeof(TestStudentRepository), ServiceLifetime.Singleton)); // singleton
+    services.Add(new ServiceDescriptor(typeof(IStudentRepository), typeof(TestStudentRepository), ServiceLifetime.Transient)); // Transient
+    services.Add(new ServiceDescriptor(typeof(IStudentRepository), typeof(TestStudentRepository), ServiceLifetime.Scoped));    // Scoped
+}
+
+
+public void ConfigureServices(IServiceCollection services)
+{
+    //Adding MVC Service. Framework Service
+    services.AddControllersWithViews();
+    //Application Service
+    services.AddSingleton<IStudentRepository, TestStudentRepository>();
+    services.AddSingleton(typeof(IStudentRepository), typeof(TestStudentRepository));
+    services.AddTransient<IStudentRepository, TestStudentRepository>();
+    services.AddTransient(typeof(IStudentRepository), typeof(TestStudentRepository));
+    services.AddScoped<IStudentRepository, TestStudentRepository>();
+    services.AddScoped(typeof(IStudentRepository), typeof(TestStudentRepository));
+}
+
+
+-----------------------------------------------------------------------------
+ViewData in ASP.NET Core MVC
+
+http://localhost:49516/Home/Details
+
+
+The ViewData is dynamically resolved at runtime, as a result, it does not provide any compiles time error checking as well as we do not get any intelligence. 
+
+
+-----------------------------------------------------------------------------
+ViewBag in ASP.NET Core MVC
+
+http://localhost:49722/Home/Details
+
+
+Difference between ViewData and ViewBag in ASP.NET Core MVC
+In ASP.NET Core MVC, we can use both ViewData and ViewBag to pass the data from a Controller action method to a View.
+The ViewData is a weakly typed dictionary object whereas the ViewBag is a dynamic property. Both ViewData and ViewBag are used to create a loosely typed view in MVC.
+In ViewData, we use string keys to store and retrieve the data from the ViewData dictionary whereas in ViewBag we use the dynamic properties to store and retrieve data.
+Both the ViewData keys and ViewBag dynamic properties are resolved only at runtime. As a result, both do not provide compile-time error checking and because of this, we will not get intelligence support.
+So if we misspell the key names or dynamic property names then we will not get any compile-time error rather we came to know about the error only at run time. This is the reason why we rarely used ViewBag and ViewData in our application.
+
+
+-----------------------------------------------------------------------------
+Strongly Typed View in ASP.NET Core MVC
+
+http://localhost:49881/Home/Details
+
+
+
+-----------------------------------------------------------------------------
+ViewModel in ASP.NET Core MVC
+
+http://localhost:50025/Student/Details
+
+
+-----------------------------------------------------------------------------
+Custom Routing in ASP.NET Core MVC
+
+http://localhost:60870/Student/Details
+http://localhost:60870/Student/Index
+http://localhost:60870/Student/Details/20
+http://localhost:60870/Student/Index/10
+http://localhost:60870/Student/Details/20
+http://localhost:60870/Student/Details/ABC
+http://localhost:60870/Student/index/ABC
+
+Now pass the id parameter value as an integer and you should get the output as expected. There are many route constraints are available that you can use. Some of them are as follows.
+
+1.	Int
+2.	Bool
+3.	Datetime
+4.	Decimal
+5.	Guid
+6.	length(min,max)
+7.	alpha
+8.	range(min,max)
+
+
+-----------------------------------------------------------------------------
+ASP.NET Core Attribute Routing using Tokens
+
+
+How to make the Index action method as the default action?
+With the controller and action tokens in place, if you want to make the Index action method of Home Controller as the default action, 
+then you need to include the Route(“”) attribute with an empty string on the Index action method as shown below. 
+
+
+-----------------------------------------------------------------------------
+Sections in Layout Page in ASP.NET Core MVC
+
+
+
+http://localhost:64854/Home/Index
+http://localhost:64854/Home/Details
+
+@RenderSection("Scripts", required: false)
+
+
+
+
+-----------------------------------------------------------------------------
+ViewStart in ASP.NET Core MVC
+
+http://localhost:65191/
+
+@{
+    if (User.IsInRole("Admin"))
+    {
+        Layout = "_AdminLayout";
+    }
+    else
+    {
+        Layout = "_NonAdminLayout";
+    }
+}
+
+-----------------------------------------------------------------------------
+ViewImports in ASP.NET Core MVC
+Just like the _ViewStart file, the _ViewImports file is also hierarchical. It is also possible to pace the _ViewImports in the subfolder of the Views folder as shown in the below image. 
+
+@using FirstCoreMVCApplication.Models;
+
+
+-----------------------------------------------------------------------------
+How to Install Bootstrap in ASP.NET Core MVC
+
+Bower
+NPM
+WebPack, etc.
+Libman
+
+
+Right click on project => Add => Client-Side Library
+
+
+-----------------------------------------------------------------------------
+Environment Tag Helper in ASP.NET Core
+ASPNETCORE_ENVIRONMENT variable are Development, Staging and Production
+
+Along the same line, we also specified a fallback source using the asp-fallback-href attribute. This attribute is basically used when the CDN is down or for some reason if our application is unable to reach the CDN. In that case, our application falls back and download the minified bootstrap file (i.e. bootstrap.min.css) from our own server.
+
+In order to check whether the CDN is down, we are using the following 3 attributes and their associated values.
+
+asp-fallback-test-class=”sr-only”
+asp-fallback-test-property=”position”
+asp-fallback-test-value=”absolute”
+
+-----------------------------------------------------------------------------
+Tag Helpers in ASP.NET Core MVC
+
+http://localhost:56270/home/details/101
+
+
+1.	asp-controller: It is used to specify the controller to target based on the routing system. If you omitted this, then the controller of the current view is used by default.
+2.	asp-action: It is used to specify the Action method to target based on the routing system. If you omitted this attribute then the action rendering the current view is used by default.
+3.	asp-route-{value}: It is used for specifying the additional segment value for the URL. For example, asp-route-id is used to provide value for the ‘id’ segment.
+
+
+
+-----------------------------------------------------------------------------
+Image Tag Helper in ASP.NET Core
+
+
+Disable browser cache: F12 => Network => Disable cache
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

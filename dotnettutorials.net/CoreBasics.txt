@@ -1,0 +1,218 @@
+
+https://dotnettutorials.net/lesson/asp-net-core-inprocess-hosting/
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+ASP.NET Core Environment Setup
+	Download and install Visual Studio (https://visualstudio.microsoft.com/)
+
+
+	c:\>dotnet --version	(3.1.401)
+
+	Download and install .NET Core SDK (https://dotnet.microsoft.com/download)
+
+
+
+ASP.NET Core Project File
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------------------
+ASP.NET Core Main Method
+the CreateHostBuilder() method returns an object that implements the IHostBuilder interface. 
+The Host is a static class that can be used for creating an instance of IHostBuilder with pre-configured defaults. 
+The CreateDefaultBuilder() method creates a new instance of the HostBuilder with pre-configured defaults. 
+Internally, it configures Kestrel (Internal Web Server for ASP.NET Core), IISIntegration, and other configurations.
+
+
+
+the CreateDefaultBuilder() method sets up a web host with default configurations.
+
+----------------------------------------------------------------------------------------------------------------------------------
+ASP.NET Core InProcess Hosting
+Tasks performed by CreateDefaultBuilder() method:
+
+
+    Setting up the webserver
+    Loading the host and application configuration from various configuration sources 
+    Configuring logging 
+
+
+InProcess hosting or OutOfProcess hosting.
+When we create a new ASP.NET Core Web application by using any template, by default the project file is created with InProcess hosting which is used for hosting the application in IIS or IIS Express scenarios.
+The InProcess mode only has one web server. (IIS)
+
+OutOfProcess: it has two web servers:
+The internal web server is called Kestrel.
+The external web server can be IIS, Nginx, or Apache.
+
+
+How to Configure InProcess hosting in ASP.NET Core?
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+  <AspNetCoreHostingModel>
+    InProcess
+  </AspNetCoreHostingModel>
+</Project>
+
+The process name that will be used to execute the application is w3wp in the case of IIS.
+
+
+System.Diagnostics.Process.GetCurrentProcess().ProcessName
+
+----------------------------------------------------------------------------------------------------------------------------------
+Kestrel Web Server in ASP.NET Core
+
+The Kestrel is the cross-platform web server for the ASP.NET Core application.
+In the case of the Kestrel web server, the process name that is used to host and run the ASP.NET Core application is the project name.
+
+Kestrel setting is in launchSettings.json
+{
+  "iisSettings": {									//This is for IIS server
+    "windowsAuthentication": false, 
+    "anonymousAuthentication": true, 
+    "iisExpress": {
+      "applicationUrl": "http://localhost:52583",
+      "sslPort": 44336
+    }
+  },
+  "profiles": {										//This is for IIS Express server
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "TrackerMvcUI": {								//This is for Kestrel server
+      "commandName": "Project",
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:5001;http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
+
+
+How to run .NET Core application using .NET Core CLI?
+dotnet —
+cd D:\Study\.NetCore\dotnettutorials.net\Experiments\FirstCoreMVCApplication\FirstCoreMVCApplication
+dotnet run
+
+---------------------------------------------------------------
+ASP.NET Core OutOfProcess Hosting
+
+
+Way1: We can use the Kestrel Web Server as the internet-facing web server which will directly process the incoming HTTP requests.
+Way2: The Kestrel Web Server can also be used with the combination of a reverse proxy server such as IIS, Apache, or Nginx.
+The reverse proxy server provides an additional layer of configuration and security which is not available with the Kestrel Server. 
+It also maintains the load balancing. 
+So, it is a good choice to use Kestrel Server along with a reverse proxy server.
+
+
+
+---------------------------------------------------------------
+ASP.NET Core launchSettings.json file
+
+The most important point that you need to keep in mind is this launchSettings.json file is only used within the local development machine. 
+That means this file is not required when we publishing our asp.net core application to the production server.
+
+
+
+Change launchSettings.json by GUI. 
+Go to property => Debug
+
+if(env.IsDevelopment())
+
+---------------------------------------------------------------
+ASP.NET Core appsettings.json file
+
+cd D:\Study\.NetCore\dotnettutorials.net\Experiments\AppSettings\AppSettings
+dotnet run MyCustomKey="my custom key value"
+
+
+---------------------------------------------------------------
+ASP.NET Core Middleware Components
+
+
+The ASP.NET Core Middleware Components are the software components (technically components are nothing but the C# Classes) that are assembled into the application pipeline to handle the HTTP Requests and Responses. Each middleware component in ASP.NET Core Application performs the following tasks.
+
+1.	Chooses whether to pass the HTTP Request to the next component in the pipeline. This can be achieved by calling the next() method within the middleware.
+2.	Can perform work before and after the next component in the pipeline.
+
+we use HTTP Handlers and HTTP Modules to set up the request processing pipeline.
+
+In ASP.NET Core, you can use the “Use” and “Run” extension methods to register the Inline Middleware component into the Request processing pipeline.
+Run:	The “Run” extension method allows us to add the terminating middleware (the middleware which will not call the next middleware components in the request processing pipeline).
+Use:	On the other hand, the “Use” extension method allows us to add the middleware components which may call the next middleware component in the request processing pipeline.
+
+
+
+                endpoints.MapGet("/", async context =>
+                {
+                    await context.Response.WriteAsync(Configuration["MyCustomKey"]);
+                });		//  "/" means domain name only.
+
+
+---------------------------------------------------------------
+wwwroot folder in ASP.NET Core
+
+
+the wwwroot folder in the ASP.NET Core application is treated as the webroot folder and this folder or directory should be present in the root project folder.
+https://localhost:<port>/js/site.js
+
+
+
+---------------------------------------------------------------
+Static Files Middleware in ASP.NET Core
+
+http://localhost:56018/pic/dotnet.png
+
+
+
+---------------------------------------------------------------
+Configuring Default Page in ASP.NET Core
+
+http://localhost:56180/index.html
+
+
+
+ASP.NET Core Command Line Interface
+---------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
