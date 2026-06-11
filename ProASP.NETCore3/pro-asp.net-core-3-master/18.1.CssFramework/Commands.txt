@@ -1,0 +1,29 @@
+Run the following on cmd:
+dotnet new globaljson --sdk-version 3.1.101 --output WebApp
+dotnet new web --no-https --output WebApp --framework netcoreapp3.1
+dotnet new sln -o WebApp
+dotnet sln WebApp add WebApp
+
+Run the following on Nuget command line:
+dotnet add package Microsoft.EntityFrameworkCore.Design --version 3.1.1
+dotnet add package Microsoft.EntityFrameworkCore.SqlServer --version 3.1.1
+
+dotnet tool uninstall --global dotnet-ef
+dotnet tool install --global dotnet-ef --version 3.1.1
+
+
+Creating and Applying the Migration:
+
+dotnet ef migrations add Initial			(Create migrations folder)
+dotnet ef database update			(Create empty data tables)
+					(After run the application, testing data will be filled into tables created above.)
+
+Adding the CSS Framework:
+dotnet tool uninstall --global Microsoft.Web.LibraryManager.Cli
+dotnet tool install --global Microsoft.Web.LibraryManager.Cli --version 2.0.96
+libman init -p cdnjs
+libman install twitter-bootstrap@4.3.1 -d wwwroot/lib/twitter-bootstrap
+
+
+
+http://localhost:5000/test
