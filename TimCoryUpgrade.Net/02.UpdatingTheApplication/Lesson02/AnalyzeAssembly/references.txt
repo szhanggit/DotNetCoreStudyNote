@@ -1,6 +1,0 @@
-https://www.cnblogs.com/shanyou/archive/2014/12/07/4149637.html
-https://marketplace.visualstudio.com/items?itemName=ConnieYau.NETPortabilityAnalyzer
-分析(N) => Analyze Assembly Portability...
-
-https://www.cnblogs.com/walterlv/p/10236415.html
-https://github.com/Microsoft/dotnet-apiport-ui/releases

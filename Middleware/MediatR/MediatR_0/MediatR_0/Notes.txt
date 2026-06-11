@@ -1,0 +1,13 @@
+﻿https://medium.com/dotnet-hub/use-mediatr-in-asp-net-or-asp-net-core-cqrs-and-mediator-in-dotnet-how-to-use-mediatr-cqrs-aspnetcore-5076e2f2880c
+https://github.com/a-patel/dotnet-labs/tree/main/libraries/MediatR
+
+Mediator Pattern
+
+The mediator pattern is a behavioral design pattern that helps to reduce chaotic dependencies between objects. The pattern restricts direct communications between the objects and forces them to collaborate only via a mediator object. Mediator is used to reduce communication complexity between multiple objects or classes. This pattern provides a mediator class which normally handles all the communications between different classes and supports easy maintenance of the code by loose coupling.
+
+CQRS
+
+CQRS stands for Command and Query Responsibility Segregation, a pattern that separates read and update operations for a data store. Implementing CQRS in your application can maximize its performance, scalability, and security. The flexibility created by migrating to CQRS allows a system to better evolve over time and prevents update commands from causing merge conflicts at the domain level.
+
+Install-Package MediatR
+Install-Package MediatR.Extensions.Microsoft.DependencyInjection
