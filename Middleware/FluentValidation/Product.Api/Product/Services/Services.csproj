@@ -1,0 +1,93 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Enums\**" />
+    <Compile Remove="Extensions\**" />
+    <Compile Remove="GetBy\**" />
+    <Compile Remove="Message\**" />
+    <Compile Remove="Models\**" />
+    <Compile Remove="Utility\**" />
+    <EmbeddedResource Remove="Enums\**" />
+    <EmbeddedResource Remove="Extensions\**" />
+    <EmbeddedResource Remove="GetBy\**" />
+    <EmbeddedResource Remove="Message\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="Utility\**" />
+    <None Remove="Enums\**" />
+    <None Remove="Extensions\**" />
+    <None Remove="GetBy\**" />
+    <None Remove="Message\**" />
+    <None Remove="Models\**" />
+    <None Remove="Utility\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Core\CommonProductService.cs" />
+    <Compile Remove="Core\CoreService.cs" />
+    <Compile Remove="Core\ExternalPropertyService.cs" />
+    <Compile Remove="Core\GetProductBrandService.cs" />
+    <Compile Remove="Core\GetProductConditionService.cs" />
+    <Compile Remove="Core\GetProductExternalPropertyService.cs" />
+    <Compile Remove="Core\ObjectConvertingService.cs" />
+    <Compile Remove="Core\ProductAcceptanceLoopService.cs" />
+    <Compile Remove="Core\ProductBrandService.cs" />
+    <Compile Remove="Core\ProductConditionService.cs" />
+    <Compile Remove="Core\ProductMemoService.cs" />
+    <Compile Remove="Core\ProductRestrictionService.cs" />
+    <Compile Remove="Core\SelectProductRestrictionService.cs" />
+    <Compile Remove="Core\UpdateProductBrandService.cs" />
+    <Compile Remove="Core\UpdateProductConditionService.cs" />
+    <Compile Remove="Core\UpdateProductExternalPropertyService.cs" />
+    <Compile Remove="Core\UpdateProductMemoService.cs" />
+    <Compile Remove="Core\UpdateProductPriceService.cs" />
+    <Compile Remove="Core\UpdateProductRestrictionService.cs" />
+    <Compile Remove="Core\UpdateProductService.cs" />
+    <Compile Remove="Core\UpdateProductStatusService.cs" />
+    <Compile Remove="Interface\ICommonProductService.cs" />
+    <Compile Remove="Interface\ICoreService.cs" />
+    <Compile Remove="Interface\IExternalPropertyService.cs" />
+    <Compile Remove="Interface\IGetProductBrandService.cs" />
+    <Compile Remove="Interface\IGetProductByIdQuery.cs" />
+    <Compile Remove="Interface\IGetProductByProductCodeQuery.cs" />
+    <Compile Remove="Interface\IGetProductByVersionIdQuery.cs" />
+    <Compile Remove="Interface\IGetProductConditionService.cs" />
+    <Compile Remove="Interface\IGetProductExternalPropertyService.cs" />
+    <Compile Remove="Interface\IGetProductHistoryQuery.cs" />
+    <Compile Remove="Interface\IGetProductListService.cs" />
+    <Compile Remove="Interface\IGetProductPriceByProductIdQuery.cs" />
+    <Compile Remove="Interface\IObjectConvertingService.cs" />
+    <Compile Remove="Interface\IProductAcceptanceLoopService.cs" />
+    <Compile Remove="Interface\IProductBrandService.cs" />
+    <Compile Remove="Interface\IProductConditionService.cs" />
+    <Compile Remove="Interface\IProductMemoService.cs" />
+    <Compile Remove="Interface\IProductRestrictionService.cs" />
+    <Compile Remove="Interface\ISelectProductRestrictionService.cs" />
+    <Compile Remove="Interface\IUpdateProductBrandService.cs" />
+    <Compile Remove="Interface\IUpdateProductConditionService.cs" />
+    <Compile Remove="Interface\IUpdateProductExternalPropertyService.cs" />
+    <Compile Remove="Interface\IUpdateProductMemoService.cs" />
+    <Compile Remove="Interface\IUpdateProductPriceService.cs" />
+    <Compile Remove="Interface\IUpdateProductRestrictionService.cs" />
+    <Compile Remove="Interface\IUpdateProductService.cs" />
+    <Compile Remove="Interface\IUpdateProductStatusService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.18.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.3" />
+	<PackageReference Include="FluentValidation" Version="11.2.2" />
+	<PackageReference Include="FluentValidation.AspNetCore" Version="10.3.3" />
+	  <PackageReference Include="Calzolari.Grpc.AspNetCore.Validation" Version="5.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Proto\TXC.Proto.Product.csproj" />
+  </ItemGroup>
+
+</Project>

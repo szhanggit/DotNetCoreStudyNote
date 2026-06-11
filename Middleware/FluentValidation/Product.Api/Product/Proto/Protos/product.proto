@@ -1,0 +1,441 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "TXC.Proto.Product";
+
+import "common.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+service Product {
+    rpc GetProducts (GetProductsRequest) returns (ProtoBaseResponse);
+	rpc UpdateProductStatus (UpdateProductStatusRequest) returns (UpdateProductStatusResponse);
+    rpc UpdateProductBrand (UpdateProductBrandRequest) returns (UpdateProductBrandResponse);
+    rpc GetProductBrand (GetProductBrandRequest) returns (ProtoBaseResponse);
+    rpc UpdateProductMemo (UpdateProductMemoRequest) returns (UpdateProductMemoResponse);
+
+    rpc UpdateProductExternalProperty (UpdateProductExternalPropertyRequest) returns (UpdateProductExternalPropertyResponse);
+    rpc GetProductExternalProperty (GetProductExternalPropertyRequest) returns (ProtoBaseResponse);
+    rpc UpdateRedeemRestriction (UpdateRedeemRestrictionRequest) returns (UpdateRedeemRestrictionResponse);
+    rpc GetProductList (GetProductListRequest) returns (ProtoBaseResponse);
+	rpc GetProductById (GetProductByIdRequest) returns (ProtoBaseResponse);
+	rpc GetProductByVersionId (GetProductByVersionIdRequest) returns (ProtoBaseResponse);
+	rpc GetProductByProductCode (GetProductByProductCodeRequest) returns (ProtoBaseResponse);
+	rpc GetProductHistory (GetProductHistoryRequest) returns (ProtoBaseResponse);
+    rpc GetRedeemRestriction (GetRedeemRestrictionRequest) returns (ProtoBaseResponse);
+	rpc GetProductPriceByProductId (GetProductPriceByProductIdRequest) returns (ProtoBaseResponse);
+	rpc UpdateProductPrice (UpdateProductPriceRequest) returns (UpdateProductPriceResponse);
+
+    rpc GetProductCondition (ProductConditionRequest) returns (ProtoBaseResponse);
+    rpc UpdateProductCondition (ProductUpdatingConditionRequest) returns (ProductUpdatingConditionResponse);
+
+    rpc UpdateProductAcceptanceLoop (UpdateProductAcceptanceLoopRequest) returns (ProtoBaseResponse);
+}
+message DecimalValue {
+
+  // The whole units of the amount.
+  int64 units = 1;
+
+  // Number of nano (10^-9) units of the amount.
+  // The value must be between -999,999,999 and +999,999,999 inclusive.
+  // If `units` is positive, `nanos` must be positive or zero.
+  // If `units` is zero, `nanos` can be positive, zero, or negative.
+  // If `units` is negative, `nanos` must be negative or zero.
+  // For example $-1.75 is represented as `units`=-1 and `nanos`=-750,000,000.
+  sfixed32  nanos = 2;
+}   
+message GetProductsRequest {
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+    google.protobuf.StringValue keyword = 3;
+    int32 merchant_acquirer_id = 4;
+    int32 status = 5;
+	int32 rowcount = 6;
+	int32 pagenumber = 7;
+}
+
+message GetProductsResponse {
+	int32 TotalCount = 1;
+    repeated GetProductsItem product_list_items = 2;
+}
+
+message GetProductsItem {
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	int32 product_id = 3;
+	string product_code = 4;
+	string product_name = 5;
+	string merchant_sku = 6;
+	int32 multiple_selection_type = 7;
+	int32 voucher_type = 8;
+	int32 brand_type = 9;
+	int32 merchant_acquirer_id = 10;
+	google.protobuf.Timestamp created_on = 11;
+	int32 status = 12;
+}
+
+message UpdateProductStatusRequest {
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	google.protobuf.StringValue TX2UserName = 3;
+    int32 product_id = 4;    
+    int32 status = 5;    
+}
+
+message UpdateProductStatusResponse {
+    bool Success = 1;
+    google.protobuf.StringValue Message = 2;
+    int32 data = 3;
+}
+message GetProductByIdRequest{
+    int32 product_id =1;
+    int32 tenant_id = 2;
+    google.protobuf.StringValue tenant_name = 3;
+}
+message GetProductByIdResponse{
+    repeated ProductBasicInfo product_basic_info = 1;
+}
+
+
+message GetProductByVersionIdRequest{
+    int32 product_version_id =1;
+    int32 tenant_id = 2;
+    google.protobuf.StringValue tenant_name = 3;
+}
+message GetProductByVersionIdResponse{
+    repeated ProductBasicInfo product_basic_info = 1;
+}
+
+
+message GetProductByProductCodeRequest{
+    string product_code =1;
+    int32 tenant_id = 2;
+    google.protobuf.StringValue tenant_name = 3;
+}
+message GetProductByProductCodeResponse{
+    repeated ProductBasicInfo product_basic_info = 1;
+}
+
+message ProductBasicInfo{
+    int32 product_id = 1;
+    int32 program_id = 2;
+    int32 product_version_id = 3;
+    string product_code =4;
+    string external_product_code =5;
+    int32 brand_id = 6;
+    int32 merchant_sku_id = 7;
+    string product_name = 8;
+    string description = 9;
+    int32 product_type = 10;
+    int32 multiple_selection_type = 11;
+    int32 redeem_time = 12;
+    bool is_dynamic = 13;
+    bool is_deferred_child =14;
+    bool is_cart_version = 15;
+    bool status = 16;
+    bool can_issue = 17;
+    google.protobuf.Timestamp stop_issue_time = 18;
+    string brand_story = 19;
+    string note = 20;
+    int32 reminder_id = 21;
+    int32 voucher_issuer_id =22;
+    int32 product_category = 23;
+    int32 product_tag = 24;
+    int32 product_issuer = 25;
+    string memo = 26;
+    string operation_note = 27;
+    string sales_note = 28;
+    string customer_service_note = 29;
+    int32 version = 30;
+    bool is_current_version = 31;
+    string created_by = 32;
+    google.protobuf.Timestamp created_on = 33;
+    string last_updated_by = 34;
+    google.protobuf.Timestamp last_updated_on = 35;
+    bool can_extend = 36;
+    int32 extension_scheme_id = 37;
+    int32 max_extend_times = 38;
+    google.protobuf.Timestamp extension_end_date = 39;
+    bool same_as_valid_end_date_on_contract = 40;
+}
+
+
+message UpdateProductBrandRequest {
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	google.protobuf.StringValue TX2UserName = 3;
+    int32 product_id = 4;    
+    google.protobuf.Int32Value brand_id = 5;    
+}
+
+message UpdateProductBrandResponse {
+    bool Success = 1;
+    google.protobuf.StringValue Message = 2;
+    int32 data = 3;
+}
+
+message GetProductBrandRequest {
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	google.protobuf.StringValue TX2UserName = 3;
+    int32 product_id = 4;
+}
+
+message GetProductBrandResponse {
+    google.protobuf.Int32Value brand_id = 1;
+    google.protobuf.StringValue brand_name = 2;
+    google.protobuf.Int32Value brand_status = 3;
+}
+
+message UpdateProductMemoRequest {
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	google.protobuf.StringValue TX2UserName = 3;
+    int32 product_id = 4;    
+	google.protobuf.StringValue operation_note = 5;
+	google.protobuf.StringValue sales_note = 6;
+	google.protobuf.StringValue customer_service_note = 7;	
+}
+
+message UpdateProductMemoResponse {
+    bool Success = 1;
+    google.protobuf.StringValue Message = 2;
+    int32 data = 3;   
+}
+
+
+
+
+
+message UpdateProductExternalPropertyRequest {
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	google.protobuf.StringValue TX2UserName = 3;
+    int32 product_id = 4;   
+    repeated ExternalPropertyItem external_property_list_items = 5;   
+}
+
+message UpdateProductExternalPropertyResponse {
+    bool Success = 1;
+    google.protobuf.StringValue Message = 2;
+    int32 data = 3;
+}
+
+message ExternalPropertyItem {
+	google.protobuf.Int32Value product_external_property_set_id = 1;
+	google.protobuf.Int32Value product_external_property_id = 2;
+    google.protobuf.StringValue property_name = 3;
+    google.protobuf.StringValue property_value = 4;
+	google.protobuf.StringValue description = 5;
+}
+
+message GetProductExternalPropertyRequest {
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	google.protobuf.StringValue TX2UserName = 3;
+    int32 product_id = 4;
+}
+
+message GetProductExternalPropertyResponse {
+    int32 product_id = 1;
+    repeated ExternalPropertyItem external_property_list_items = 2;
+}
+
+
+message UpdateRedeemRestrictionRequest {
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	google.protobuf.StringValue TX2UserName = 3;
+    int32 product_id = 4;    
+	repeated RedeemTimeRestrictionItem redeem_time_restriction_items = 5;   
+	repeated RedeemDateRestrictionItem redeem_date_restriction_items = 6;
+}
+
+message UpdateRedeemRestrictionResponse {
+    bool Success = 1;
+    google.protobuf.StringValue Message = 2;
+    int32 data = 3;   
+}
+
+message RedeemTimeRestrictionItem {
+	google.protobuf.Int32Value product_redeem_time_restriction_id = 1;
+	google.protobuf.Int32Value product_redeem_time_restriction_set_id = 2;
+    google.protobuf.Int32Value day_of_the_week = 3;
+    google.protobuf.StringValue hours = 4;
+	
+}
+
+message RedeemDateRestrictionItem {
+	google.protobuf.Int32Value product_redeem_date_blacklist_set_id = 1;
+	google.protobuf.Int32Value product_redeem_date_blacklist_id = 2;
+    google.protobuf.Timestamp black_date = 3;
+}
+
+message RedeemRestrictionResponseItem {
+	google.protobuf.Int32Value product_redeem_time_restriction_id = 1;
+	google.protobuf.Int32Value product_redeem_date_blacklist_id = 2;
+}
+
+
+
+message GetRedeemRestrictionRequest {
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	google.protobuf.StringValue TX2UserName = 3;
+    int32 product_id = 4;     
+}
+
+message GetRedeemRestrictionResponse {
+    bool Success = 1;
+    google.protobuf.StringValue Message = 2;
+    repeated RedeemDateRestrictionItem date_restriction_items = 3;    
+	repeated RedeemTimeRestrictionItem time_restriction_items = 4;    	
+    int32 product_id = 5;  
+}
+
+message ProductItem{
+	int32 product_id = 1;
+	string product_code = 2;
+	string product_name = 3;
+	string merchant_sku = 4;
+	int32 product_type = 5;
+	int32 generated_by = 6;
+	string created_by = 7;
+	google.protobuf.Timestamp created_on = 8;
+	int32 status = 9;
+}
+message GetProductListResponse{
+	int32 total_count = 1;
+	repeated ProductItem product_list_items = 2;
+}
+message GetProductListRequest{
+	google.protobuf.StringValue keyword = 1;
+    int32 type = 2;
+	int32 merchant_acquirer_id = 3;
+    int32 status = 4;
+	int32 rowcount = 5;
+	int32 pagenumber = 6;
+	google.protobuf.StringValue sort_by = 7;
+	google.protobuf.StringValue sort_direction = 8;
+	int32 tenantId = 9;
+	google.protobuf.StringValue tenantName = 10; 
+	google.protobuf.StringValue TX2UserName = 11; 
+}
+
+
+message GetProductHistoryResponse{
+    int32 TotalCount = 1;
+    repeated ProductHistory product_history_list = 2;
+}
+message GetProductHistoryRequest{
+    int32 product_id = 1;
+    int32 tenant_id = 2;
+    google.protobuf.StringValue tenant_name = 3;
+	google.protobuf.StringValue TX2UserName = 4;
+}
+
+message ProductHistory{
+    int32 product_version_id = 1;
+    int32 version =2;
+    string product_code = 3;
+    string product_name = 4;
+    int32 product_type = 5;
+    bool status = 6;
+    string created_by = 7;
+    google.protobuf.Timestamp created_on = 8;
+    string last_updated_by = 9;
+    google.protobuf.Timestamp last_updated_on = 10;
+}
+
+message ProductConditionRequest{
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	google.protobuf.StringValue TX2UserName = 3;
+    int32 product_id = 4; 
+}
+
+message ProductConditionResponse{
+    int32 product_id = 1;
+    int32 min_redeem_quantity = 2;
+    google.protobuf.Int32Value max_issuing_quantity = 3;
+    google.protobuf.Timestamp valid_from = 4;
+    google.protobuf.Timestamp valid_to = 5;
+    int32 reverse_limit_id = 6;
+    int32 pre_authorization_expiry_interval = 7;
+    int32 pre_authorization_expiry_unit = 8;   
+}
+
+message ProductUpdatingConditionRequest{
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	google.protobuf.StringValue TX2UserName = 3;
+    int32 product_id = 4; 
+    int32 min_redeem_quantity = 5;
+    google.protobuf.Int32Value max_issuing_quantity = 6;
+    google.protobuf.Timestamp valid_from = 7;
+    google.protobuf.Timestamp valid_to = 8;
+    int32 reverse_limit_id = 9;
+    int32 pre_authorization_expiry_interval = 10;
+    int32 pre_authorization_expiry_unit = 11;   
+}
+
+message ProductUpdatingConditionResponse {
+    bool Success = 1;
+    google.protobuf.StringValue Message = 2;
+    int32 data = 3;   
+}
+
+message GetProductPriceByProductIdResponse{
+   int32 product_price_id = 1;
+   int32 face_value = 2;
+   int32 face_value_with_tax =3;
+   DecimalValue selling_price_prepaid = 4;
+   DecimalValue selling_price_prepaid_with_tax = 5;
+   DecimalValue selling_price_postpaid = 6;
+   DecimalValue selling_price_postpaid_with_tax = 7;
+   DecimalValue cost = 8;
+   DecimalValue cost_with_tax = 9;
+   int32 balance = 10;
+   DecimalValue customer_fee_prepaid = 11;
+   DecimalValue customer_fee_prepaid_with_tax = 12;
+   DecimalValue customer_fee_postpaid = 13;
+   DecimalValue customer_fee_postpaid_with_tax = 14;
+   DecimalValue merchant_fee = 15;
+   DecimalValue merchant_fee_with_tax = 16;
+   DecimalValue default_selling_price = 17;
+   DecimalValue default_product_cost = 18;
+}
+message GetProductPriceByProductIdRequest{
+    int32 product_id = 1;
+    int32 tenant_id = 2;
+    google.protobuf.StringValue tenant_name = 3;
+	google.protobuf.StringValue TX2UserName = 4;
+}
+
+message UpdateProductPriceRequest{
+   int32 product_id = 1;
+   google.protobuf.Int32Value face_value_with_tax =2;
+   DecimalValue selling_price_prepaid_with_tax = 3;
+   DecimalValue selling_price_postpaid_with_tax = 4;
+   DecimalValue cost_with_tax = 5;
+   google.protobuf.Int32Value balance = 6;
+   DecimalValue customer_fee_prepaid_with_tax = 7;
+   DecimalValue customer_fee_postpaid_with_tax = 8;
+   DecimalValue merchant_fee_with_tax = 9;
+   DecimalValue default_selling_price = 10;
+   DecimalValue default_product_cost = 11;
+   int32 tenant_id = 12;
+   google.protobuf.StringValue tenant_name = 13;
+   google.protobuf.StringValue TX2UserName = 14;
+}
+message UpdateProductPriceResponse {
+    bool Success = 1;
+    google.protobuf.StringValue Message = 2;
+}
+
+message UpdateProductAcceptanceLoopRequest{
+    int32 tenant_id = 1;
+    google.protobuf.StringValue tenant_name = 2;
+	google.protobuf.StringValue TX2UserName = 3;
+    int32 product_id = 4;    
+    int32 acceptance_loop_id = 5;
+}

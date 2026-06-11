@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net5.0</TargetFramework>
+		<RootNamespace>TXC.Proto.Product</RootNamespace>
+		<PackageId>TXC.Proto.Product</PackageId>
+		<Version>0.0.0.22</Version>
+		<Authors>Edenred</Authors>
+		<Description>Product Proto</Description>
+		<IsPackable>true</IsPackable>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Google.Protobuf" Version="3.21.0" />
+	  <PackageReference Include="Grpc.AspNetCore" Version="2.45.0" />
+	  <PackageReference Include="Grpc.Tools" Version="2.45.0">
+	    <PrivateAssets>all</PrivateAssets>
+	    <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+	  </PackageReference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Protobuf Include="Protos\common.proto" GrpcServices="Server,Client" AdditionalImportDirs="Protos" />
+		<Protobuf Include="Protos\product.proto" GrpcServices="Server,Client" AdditionalImportDirs="Protos" />
+	</ItemGroup>
+</Project>
