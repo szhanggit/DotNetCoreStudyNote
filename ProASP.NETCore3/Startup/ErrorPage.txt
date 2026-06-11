@@ -1,0 +1,26 @@
+public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+
+	/*Error Page Start*/
+	if (env.IsProduction()) {
+		app.UseExceptionHandler("/error");
+	} else {
+		app.UseDeveloperExceptionPage();
+		app.UseStatusCodePages();
+	}
+	/*Error Page End*/
+
+	app.UseStaticFiles();
+	app.UseSession();
+	app.UseRouting();
+	app.UseAuthentication();
+	app.UseAuthorization();
+	app.UseEndpoints(endpoints => {
+		endpoints.MapControllerRoute("catpage", "{category}/Page{productPage:int}", new { Controller = "Home", action = "Index" });
+		endpoints.MapControllerRoute("page", "Page{productPage:int}", new { Controller = "Home", action = "Index", productPage = 1 });
+		endpoints.MapControllerRoute("category", "{category}", new { Controller = "Home", action = "Index", productPage = 1 });
+		endpoints.MapControllerRoute("pagination", "Products/Page{productPage}", new { Controller = "Home", action = "Index", productPage = 1 });
+		endpoints.MapDefaultControllerRoute();
+		endpoints.MapRazorPages();
+		endpoints.MapBlazorHub();
+		endpoints.MapFallbackToPage("/admin/{*catchall}", "/Admin/Index");
+});
