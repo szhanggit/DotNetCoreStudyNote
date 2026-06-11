@@ -1,0 +1,2 @@
+Delete MCVUI project
+Create a new ASP.NET Core Web project called TrackerMvcUI.
