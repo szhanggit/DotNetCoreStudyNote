@@ -1,0 +1,44 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <link href="/lib/twitter-bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="bg-info text-white m-2 p-1">
+        This is part of the layout
+    </div>
+    <h6 class="bg-primary text-white text-center m-2 p-2">
+        @RenderSection("Header", false)
+    </h6>
+    <div class="bg-info text-white m-2 p-1">
+        This is part of the layout
+    </div>
+    <div class="m-2">
+        <table class="table table-sm table-striped table-bordered">
+            <tbody>
+                @RenderBody()
+            </tbody>
+        </table>
+    </div>
+    <div class="bg-info text-white m-2 p-1">
+        This is part of the layout
+    </div>
+    <h6 class="bg-primary text-white text-center m-2 p-2">
+        @RenderSection("Footer", false)
+    </h6>
+    <div class="bg-info text-white m-2 p-1">
+        This is part of the layout
+    </div>
+    @if (IsSectionDefined("Summary"))
+    {
+        @RenderSection("Summary", false)
+    }
+    else
+    {
+        <div class="bg-info text-center text-white m-2 p-2">
+            This is the default summary
+        </div>
+    }
+</body>
+</html>
