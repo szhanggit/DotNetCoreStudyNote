@@ -1,0 +1,18 @@
+For TrackerUI
+
+Microsoft.Extensions.DependencyInjection
+Microsoft.Extensions.Hosting
+
+Program:
+        var host = CreateHostBuilder(args).Build();
+
+        public static IHostBuilder CreateHostBuilder(string[] args)
+        {
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddTransient<TournamentDashboardForm>();	//This is the config code
+                });
+        }
+
+https://caliburnmicro.com/documentation/simple-container

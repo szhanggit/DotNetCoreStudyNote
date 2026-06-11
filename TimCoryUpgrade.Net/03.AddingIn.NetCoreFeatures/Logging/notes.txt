@@ -1,0 +1,14 @@
+Microsoft.Extension.Logging		ILog
+Serilog
+Serilog.Sinks.File
+Serilog.Extensions.Logging
+
+For TrackerUI
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Debug()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .Enrich.FromLogContext()
+                .WriteTo.File(@"C:\Temp\TournamentTracker\WinformLog.txt")
+                .CreateLogger();
+
+https://github.com/serilog/serilog-extensions-logging/blob/dev/samples/Sample/Program.cs
