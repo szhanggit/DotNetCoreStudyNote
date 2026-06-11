@@ -1,0 +1,6 @@
+﻿https://www.thecodehubs.com/using-quartz-scheduler-in-asp-net-core/
+
+sc create TestQuartz_0 BinPath=D:\E\CoreTools\WindowsService\Quartz_0\Quartz_0\bin\Debug\netcoreapp3.1\Quartz_0.exe
+sc start TestQuartz_0
+sc stop TestQuartz_0
+sc delete TestQuartz_0

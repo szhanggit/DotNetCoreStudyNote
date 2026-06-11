@@ -1,0 +1,13 @@
+﻿https://andrewlock.net/using-quartz-net-with-asp-net-core-and-worker-services/
+https://www.quartz-scheduler.net/documentation/quartz-3.x/packages/microsoft-di-integration.html#di-aware-job-factories
+
+Install-Package Quartz
+dotnet add WorkerService_1 package Microsoft.Extensions.Hosting --version 5.0.0
+dotnet add WorkerService_1 package Quartz.Extensions.Hosting --version 3.2.3
+Install-Package Quartz.Extensions.DependencyInjection
+Install-Package Microsoft.Extensions.Hosting.WindowsServices
+
+sc create TestQuartzWorker BinPath=D:\E\CoreTools\WindowsService\WorkerService_1\WorkerService_1\bin\Debug\netcoreapp3.1\WorkerService_1.exe
+sc start TestQuartzWorker
+sc stop TestQuartzWorker
+sc delete TestQuartzWorker

@@ -1,0 +1,7 @@
+﻿sc create TestAPIWorker2 BinPath=D:\Study\CSharpStudyNotes\WindowsService\Core\WorkerService_2\WorkerService_2\bin\Debug\netcoreapp3.1\WorkerService_2.exe
+sc start TestAPIWorker2
+sc stop TestAPIWorker2
+sc delete TestAPIWorker2
+
+After checking launchSettings.json
+http://localhost:5000/api/WeatherForecast

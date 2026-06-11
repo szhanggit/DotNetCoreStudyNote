@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31911.196
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSWindowsService_0", "MSWindowsService_0\MSWindowsService_0.csproj", "{51B4105E-489B-4684-8561-77F4EB33AC4F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{10B38D31-35CE-4555-9BC2-9EBEB815DDBE}"
+	ProjectSection(SolutionItems) = preProject
+		Notes.txt = Notes.txt
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestMSWindowsService", "TestMSWindowsService\TestMSWindowsService.csproj", "{FC6D01D4-9D63-4B95-8D94-02172EECCAC2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{51B4105E-489B-4684-8561-77F4EB33AC4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51B4105E-489B-4684-8561-77F4EB33AC4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51B4105E-489B-4684-8561-77F4EB33AC4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51B4105E-489B-4684-8561-77F4EB33AC4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC6D01D4-9D63-4B95-8D94-02172EECCAC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC6D01D4-9D63-4B95-8D94-02172EECCAC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC6D01D4-9D63-4B95-8D94-02172EECCAC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC6D01D4-9D63-4B95-8D94-02172EECCAC2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {899DDE50-CA4B-47A7-B897-C8DDAC7A330B}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,101 @@
+## .NET / .NET Core .gitignore
+
+# Build output
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio files
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+
+# Rider
+.idea/
+*.sln.iml
+
+# VS Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# NuGet packages
+*.nupkg
+*.snupkg
+**/packages/
+!**/packages/build/
+nuget.config
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# MSBuild
+*.cache
+*.dbmdl
+*.dbproj.schemaview
+*.jfm
+*.pfx
+*.publishsettings
+
+# Roslyn
+*.VisualState.xml
+
+# Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.trx
+*.coverage
+*.coveragexml
+coverage*/
+TestResult.xml
+coverage-report/
+
+# Publish output
+publish/
+**/publish/
+
+# ASP.NET / .NET Core
+wwwroot/lib/
+appsettings.*.json
+!appsettings.Development.json
+!appsettings.Example.json
+
+# Entity Framework
+migrations/*.Designer.cs
+*.mdf
+*.ldf
+*.ndf
+
+# SQL Server files
+*.mdf
+*.ldf
+
+# Secrets / sensitive config
+secrets.json
+**/secrets.json
+*.pfx
+*.p12
+*.pem
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Temp files
+*.tmp
+*.temp
+~$*
+
+# Docker
+.dockerignore
+
+# Packages from other ecosystems (if any)
+node_modules/

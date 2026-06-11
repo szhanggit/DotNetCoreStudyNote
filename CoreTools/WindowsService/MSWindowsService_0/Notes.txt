@@ -1,0 +1,4 @@
+https://dotnetcoretutorials.com/2019/09/19/creating-windows-services-in-net-core-part-1-the-microsoft-way/
+Install-Package Microsoft.Windows.Compatibility
+dotnet publish -r win-x64 -c Release
+sc create TestService BinPath=D:\E\CoreTools\WindowsService\MSWindowsService_0\MSWindowsService_0\bin\Release\netcoreapp3.1\win-x64\MSWindowsService_0.exe

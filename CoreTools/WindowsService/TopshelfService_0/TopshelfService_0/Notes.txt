@@ -1,0 +1,6 @@
+﻿https://dotnetcoretutorials.com/2019/09/27/creating-windows-services-in-net-core-part-2-the-topshelf-way/
+
+Install-Package Topshelf
+dotnet publish -r win-x64 -c Release
+D:\E\CoreTools\WindowsService\TopshelfService_0\TopshelfService_0\bin\Release\netcoreapp3.1\win-x64\TopshelfService_0.exe install
+D:\E\CoreTools\WindowsService\TopshelfService_0\TopshelfService_0\bin\Release\netcoreapp3.1\win-x64\TopshelfService_0.exe start

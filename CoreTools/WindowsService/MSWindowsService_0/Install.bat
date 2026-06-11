@@ -1,0 +1,1 @@
+sc create TestService BinPath=D:\E\CoreTools\WindowsService\MSWindowsService_0\MSWindowsService_0\bin\Debug\netcoreapp3.1\MSWindowsService_0.exe

@@ -1,0 +1,25 @@
+﻿https://codewithmukesh.com/blog/hangfire-in-aspnet-core-3-1/
+
+1. Create a web api
+2. Install-Package Hangfire
+3. Add in the Startup.cs
+
+public void ConfigureServices(IServiceCollection services)
+{
+    services.AddHangfire(x => x.UseSqlServerStorage("<connection string>"));
+    services.AddHangfireServer();
+    services.AddControllers();
+}
+
+Add
+
+app.UseHangfireDashboard("/mydashboard"); 
+
+in the config.
+
+
+4. After starting the application, all of the hangfire tables will be automatically created.
+5. http://localhost:48540/mydashboard
+6. http://localhost:48540/api/Hangfire/welcome?userName=Mukesh
+7. http://localhost:48540/api/Hangfire/delayedWelcome?userName=Mukesh
+8. http://localhost:48540/api/Hangfire/Invoice?userName=Mukesh
