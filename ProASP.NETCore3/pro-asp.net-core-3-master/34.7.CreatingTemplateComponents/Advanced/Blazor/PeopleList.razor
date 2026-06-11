@@ -1,0 +1,36 @@
+﻿<TableTemplate>
+    <Header>
+    <tr><th>ID</th><th>Name</th><th>Dept</th><th>Location</th></tr>
+    </Header>
+    <Body>
+        @foreach (Person p in People)
+        {
+            <tr class="@GetClass(p.Location.City)">
+                <td>@p.PersonId</td>
+                <td>@p.Surname, @p.Firstname</td>
+                <td>@p.Department.Name</td>
+                <td>@p.Location.City, @p.Location.State</td>
+            </tr>
+        }
+    </Body>
+</TableTemplate>
+
+<ThemeWrapper Theme="info" Title="Location Selector">
+    <SelectFilter values="@Cities" title="@SelectTitle" @bind-SelectedValue="SelectedCity" />
+    <button class="btn btn-primary" @onclick="@(() => SelectedCity = "San Jose")">
+        Change
+    </button>
+</ThemeWrapper>
+
+@code {
+    [Inject]
+    public DataContext Context { get; set; }
+    public IEnumerable<Person> People => Context.People.Include(p => p.Department).Include(p => p.Location).Take(ItemCount);
+    public IEnumerable<string> Cities => Context.Locations.Select(l => l.City);
+    public string SelectedCity { get; set; }
+    public string GetClass(string city) => SelectedCity == city ? "bg-info text-white" : "";
+    [Parameter]
+    public int ItemCount { get; set; } = 4;
+    [Parameter]
+    public string SelectTitle { get; set; }
+}
