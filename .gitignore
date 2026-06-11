@@ -99,3 +99,8 @@ desktop.ini
 
 # Packages from other ecosystems (if any)
 node_modules/
+
+# Large binaries / installers
+*.exe
+*.msi
+*.iso
