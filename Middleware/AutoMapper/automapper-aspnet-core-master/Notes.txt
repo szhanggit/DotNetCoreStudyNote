@@ -1,0 +1,86 @@
+﻿https://code-maze.com/automapper-net-core/
+Install-Package AutoMapper.Extensions.Microsoft.DependencyInjection
+
+http://localhost:53296/user
+
+
+
+            CreateMap<TXC.Proto.Product.ProductConditionResponse, ProductCondition>()
+            .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+            .ForMember(dest => dest.MinRedeemQuantity, opt => opt.MapFrom(src => src.MinRedeemQuantity))
+            .ForMember(dest => dest.MaxIssuingQuantity, opt => opt.MapFrom(src => src.MaxIssuingQuantity))
+            .ForMember(dest => dest.ValidFrom, opt => opt.MapFrom(src => src.ValidFrom.ToDateTime()))
+            .ForMember(dest => dest.ValidTo, opt => opt.MapFrom(src => src.ValidTo.ToDateTime()))
+            .ForMember(dest => dest.ReverseLimitId, opt => opt.MapFrom(src => src.ReverseLimitId))
+            .ForMember(dest => dest.PreAuthorizationExpiryInterval, opt => opt.MapFrom(src => src.PreAuthorizationExpiryInterval))
+            .ForMember(dest => dest.PreAuthorizationExpiryUnit, opt => opt.MapFrom(src => src.PreAuthorizationExpiryUnit));
+
+            CreateMap<Services.Command.TxProduct.UpdateProductConditionCommand, TXC.Proto.Product.ProductUpdatingConditionRequest>()
+            .ForMember(dest => dest.ProductId, opt => opt.MapFrom(src => src.ProductId))
+            .ForMember(dest => dest.MinRedeemQuantity, opt => opt.MapFrom(src => src.MinRedeemQuantity))
+            .ForMember(dest => dest.MaxIssuingQuantity, opt => opt.MapFrom(src => src.MaxIssuingQuantity))
+            .ForMember(dest => dest.ValidFrom, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.ValidFrom, DateTimeKind.Utc))))
+            .ForMember(dest => dest.ValidTo, opt => opt.MapFrom(src => Timestamp.FromDateTime(DateTime.SpecifyKind(src.ValidTo, DateTimeKind.Utc))))
+            .ForMember(dest => dest.ReverseLimitId, opt => opt.MapFrom(src => src.ReverseLimitId))
+            .ForMember(dest => dest.PreAuthorizationExpiryInterval, opt => opt.MapFrom(src => src.PreAuthorizationExpiryInterval))
+            .ForMember(dest => dest.PreAuthorizationExpiryUnit, opt => opt.MapFrom(src => src.PreAuthorizationExpiryUnit));
+
+            CreateMap<TXC.Proto.Client.GetClientListResponse, Domain.Models.Response.GetClientListResponse>()
+                .ForMember(s => s.TotalCount, c => c.MapFrom(m => m.TotalCount))
+                .ForMember(s => s.ClientDtos, c => c.MapFrom(m => m.ClientDtos));
+            CreateMap<TXC.Proto.Client.ClientListItem, ClientDto>();
+
+    public class GetClientListResponse : IPaginationTotal
+    {
+        public IList<ClientDto> ClientDtos { get; set; }
+        public int TotalCount { get; set; }
+    }
+
+message GetClientListResponse{
+    repeated ClientListItem client_dtos = 1;
+    int32 total_count = 2;
+}
+
+message ClientListItem {
+    int32 client_id = 1;
+    google.protobuf.StringValue client_name = 2;
+    google.protobuf.StringValue identity_code = 3;
+    google.protobuf.StringValue invoice_register_number = 4;
+    google.protobuf.Int32Value voucher_issuer_id = 5;
+    google.protobuf.Int32Value business_type_id = 6;
+    int32 status = 7;
+    int32 security_algorithm = 8;
+    google.protobuf.StringValue security_key = 9;
+    bool need_notification = 10;
+    int32 notification_provider_code_id = 11;
+    int32 logo_media_id = 12;
+    int32 banner_media_id = 13;
+    int32 email_header_media_id = 14;
+    int32 email_footer_media_id = 15;
+    bool can_issue = 16;
+    bool mandatory_auto_billing = 17;
+    google.protobuf.StringValue invoice_title = 18;
+    google.protobuf.StringValue sub_url = 19;
+    google.protobuf.StringValue email_provider_code = 20;
+    google.protobuf.StringValue email_sender_name = 21;
+    google.protobuf.StringValue email_sender_address = 22;
+    bool apply_email_subject = 23;
+    google.protobuf.StringValue sms_provider_code = 24;
+    google.protobuf.StringValue sms_sender_name = 25;
+    google.protobuf.StringValue sms_entity_id = 26;
+    google.protobuf.StringValue sales_email = 27;
+    google.protobuf.StringValue contact_name = 28;
+    google.protobuf.StringValue contact_email = 29;
+    google.protobuf.StringValue contact_phone = 30;
+    google.protobuf.StringValue memo = 31;
+    google.protobuf.StringValue description = 32;
+    google.protobuf.StringValue DetailAddressLine = 33;
+    google.protobuf.StringValue District = 34;
+    int32 CityId = 35;
+    int32 StateOrProvinceId = 36;
+    google.protobuf.StringValue Postcode = 37;
+    int32 CountryId = 38;
+    float Longitude = 39;
+    float Latitude = 40;
+    int32 AddressStatus = 41;
+}

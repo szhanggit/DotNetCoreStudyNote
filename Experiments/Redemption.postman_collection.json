@@ -1,0 +1,215 @@
+{
+	"info": {
+		"_postman_id": "6316ea66-f971-4cb2-bdd0-f5e190921f06",
+		"name": "Redemption",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8093163"
+	},
+	"item": [
+		{
+			"name": "TEST",
+			"item": [
+				{
+					"name": "TestPOS",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"utils.invokeLocalUtility(pm);"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"user-agent": true,
+							"accept": true,
+							"accept-encoding": true,
+							"connection": true
+						}
+					},
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "TenantBasicInfoId",
+								"value": "7",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "ProgramIdentityCode",
+								"value": "00001",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "MerchantIdentityCode",
+								"value": "000000000000039",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Channel",
+								"value": "Test",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Checksum",
+								"value": "5CFB2A724DF0471597EB299862C5CD6E",
+								"description": "5cfb2a724df0471597eb299862c5cd6e",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "Encoding",
+								"value": "utf8",
+								"type": "text",
+								"disabled": true
+							},
+							{
+								"key": "ST929277420037478666545",
+								"value": "ST929277420037478666545",
+								"description": "ST929277420037478666545",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"terminalSsn\": \"1234567890sdfsg\",\r\n    \"terminalDateTime\": \"2023-10-20T12:00:00.000Z\",\r\n    \"voucherNumber\": \"ST929277420037478666545\",\r\n    \"tranAmount\": 445\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{root}}/gateway/api/redemption/TestPOS",
+							"host": [
+								"{{root}}"
+							],
+							"path": [
+								"gateway",
+								"api",
+								"redemption",
+								"TestPOS"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"console.clear()",
+					"",
+					"utils = {",
+					"  invokeLocalUtility: function(_pm) {",
+					"    const encryptRequest = {",
+					"        url: \"http://localhost:5000/api/Redemption\",",
+					"        method: \"POST\",",
+					"        body: JSON.stringify(_pm.request.body.raw),",
+					"        header: {",
+					"            'Accept': 'application/json',",
+					"            'Content-Type': 'application/json',",
+					"        }",
+					"    };",
+					"",
+					"    function setHeader(req, isAdd = false) {",
+					"        [\"TenantBasicInfoId\", \"ProgramIdentityCode\", \"MerchantIdentityCode\", \"Channel\", \"Encoding\", \"ShopIdentityCode\", \"TerminalIdentityCode\"]",
+					"        .forEach(x => {",
+					"            if(isAdd)",
+					"                req.headers.add({key: x, value: _pm.collectionVariables.get(x)});",
+					"            else    ",
+					"                req.header[x] = _pm.collectionVariables.get(x);",
+					"        })",
+					"    }",
+					"",
+					"    setHeader(encryptRequest);",
+					"",
+					"    encryptRequest.header[\"action\"] = _pm.request.url.getPath().split('/').pop();",
+					"",
+					"    _pm.sendRequest(encryptRequest, function (err, response) {",
+					"        if (err)",
+					"            console.log(err)",
+					"        else {",
+					"            var result = JSON.parse(response.json());",
+					"            _pm.request.body.raw = result.payload;",
+					"            _pm.request.headers.add({key: \"Checksum\", value: result.checksum});",
+					"",
+					"            setHeader(_pm.request, true);",
+					"            console.log(result)",
+					"        }",
+					"    })",
+					"  }",
+					"};"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "TenantBasicInfoId",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ProgramIdentityCode",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "MerchantIdentityCode",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ShopIdentityCode",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "TerminalIdentityCode",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "Channel",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "Encoding",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

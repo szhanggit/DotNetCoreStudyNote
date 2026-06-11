@@ -1,0 +1,3 @@
+﻿Install-Package Swashbuckle.AspNetCore
+http://localhost:5000/swagger/index.html
+http://localhost:37417/swagger/index.html
