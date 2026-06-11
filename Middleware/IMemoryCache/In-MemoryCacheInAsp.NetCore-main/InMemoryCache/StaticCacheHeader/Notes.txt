@@ -1,0 +1,5 @@
+﻿https://quizdeveloper.com/tips/caching-data-by-using-in-memory-cache-in-aspdotnet-core-3dot1-aid97
+Install-Package Microsoft.Extensions.Caching.Memory -Version 3.1.0
+
+How to cache data in .NET core?
+In Asp.Net Core support some way to help cache data such as In-memory cache, Distributed cache and Response cache using middleware. We can cache by URL, cache by method, function name... It depends on your purpose if you want to cache data only you can choose In-memory cache and if you have some web API and want to cache it you can choose Response cache middleware. 

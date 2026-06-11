@@ -1,0 +1,15 @@
+﻿{
+  "id": -1,
+  "name": "string",
+  "productCode": "string",
+  "programId": 6
+}	
+
+
+{
+  "id": 1,
+  "name": "Book",
+  "productCode": "aaaaab",
+  "programId": 26,
+  "type": 100
+}	
